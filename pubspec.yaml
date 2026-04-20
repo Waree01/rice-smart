@@ -1,0 +1,113 @@
+name: rice_smart
+description: >
+  AI-powered mobile application to help Thai rice farmers optimize costs
+  and increase yield through disease detection, pest identification, and
+  an intelligent chatbot named Pasadee (พัสดี).
+
+publish_to: 'none'
+
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Navigation
+  go_router: ^13.0.0
+
+  # Network & API
+  dio: ^5.4.0
+  retrofit: ^4.0.3
+  connectivity_plus: ^5.0.2
+
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  firebase_messaging: ^14.7.9
+  firebase_analytics: ^10.8.9
+
+  # Local Storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  sqflite: ^2.3.2
+  path_provider: ^2.1.2
+
+  # AI / ML - On-device Inference
+  tflite_flutter: ^0.10.4
+  image: ^4.1.4
+
+  # Camera & Image
+  camera: ^0.10.5+9
+  image_picker: ^1.0.7
+  image_cropper: ^5.0.1
+
+  # UI Components
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  fl_chart: ^0.66.2
+  lottie: ^3.0.0
+
+  # Localization
+  intl: ^0.19.0
+  flutter_localizations:
+    sdk: flutter
+
+  # Utils
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+  logger: ^2.0.2+1
+  envied: ^0.5.3
+  permission_handler: ^11.2.0
+  geolocator: ^10.1.1
+  url_launcher: ^6.2.4
+
+  # Markdown rendering for chatbot
+  flutter_markdown: ^0.6.22
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code Generation
+  build_runner: ^2.4.8
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
+  retrofit_generator: ^8.0.6
+  riverpod_generator: ^2.3.9
+  envied_generator: ^0.5.3
+
+  # Linting
+  flutter_lints: ^3.0.1
+  custom_lint: ^0.6.0
+
+  # Testing
+  mockito: ^5.4.4
+  mocktail: ^1.0.3
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/models/
+    - assets/icons/
+    - assets/fonts/
+    - assets/knowledge_base/
+
+  # fonts:
+  #   - family: NotoSansThai
+  #     fonts:
+  #       - asset: assets/fonts/NotoSansThai-Regular.ttf
+  #       - asset: assets/fonts/NotoSansThai-Bold.ttf
+  #         weight: 700

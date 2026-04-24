@@ -1,144 +1,294 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/services/llm_gateway.dart';
 import '../../../core/theme/app_colors.dart';
+import '../providers/chatbot_providers.dart';
+import '../widgets/chat_bubble.dart';
 
-/// Pasadee Chatbot Screen
-/// Virtual farmer persona powered by multi-LLM gateway
-/// (Claude, GPT, Gemini, Typhoon) with RAG + Thai embedding
-class ChatbotScreen extends StatefulWidget {
-  const ChatbotScreen({super.key});
+/// Pasadee Chatbot Screen.
+///
+/// Lives on top of the multi-LLM [LlmGateway]: chooses a preferred
+/// provider, streams (well, polls) the response, and renders markdown
+/// replies. Supports a pre-seeded prompt via `GoRouterState.extra` so
+/// the disease/pest detection screens can hand a diagnosis over to
+/// Pasadee for follow-up.
+class ChatbotScreen extends ConsumerStatefulWidget {
+  /// Optional prompt to auto-send on first build (used when navigating
+  /// from disease/pest screens).
+  final String? initialPrompt;
+  const ChatbotScreen({super.key, this.initialPrompt});
 
   @override
-  State<ChatbotScreen> createState() => _ChatbotScreenState();
+  ConsumerState<ChatbotScreen> createState() => _ChatbotScreenState();
 }
 
-class _ChatbotScreenState extends State<ChatbotScreen> {
-  final TextEditingController _messageController = TextEditingController();
-  final List<Map<String, String>> _messages = [
-    {
-      'role': 'assistant',
-      'content': 'สวัสดีครับ! ผมพัสดี ชาวนาผู้ช่วยของคุณ 🌾\n'
-          'ถามเรื่องการปลูกข้าว โรคข้าว ศัตรูพืช หรืออะไรก็ได้เลยครับ',
-    },
-  ];
+class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
+  final TextEditingController _input = TextEditingController();
+  final ScrollController _scroll = ScrollController();
+  bool _didSeed = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didSeed && widget.initialPrompt != null) {
+      _didSeed = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(chatbotControllerProvider.notifier).send(widget.initialPrompt!);
+      });
+    }
+  }
 
   @override
   void dispose() {
-    _messageController.dispose();
+    _input.dispose();
+    _scroll.dispose();
     super.dispose();
   }
 
-  void _sendMessage() {
-    final text = _messageController.text.trim();
+  void _handleSend() {
+    final text = _input.text.trim();
     if (text.isEmpty) return;
+    _input.clear();
+    ref.read(chatbotControllerProvider.notifier).send(text);
+  }
 
-    setState(() {
-      _messages.add({'role': 'user', 'content': text});
-      _messageController.clear();
-      // TODO: Send to LLM Gateway and get Pasadee response
-    });
+  void _scrollToBottom() {
+    if (!_scroll.hasClients) return;
+    _scroll.animateTo(
+      _scroll.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final messages = ref.watch(chatbotControllerProvider);
+    final preferred = ref.watch(preferredLlmProvider);
+
+    ref.listen(chatbotControllerProvider, (_, __) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    });
+
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               backgroundColor: AppColors.primary,
               radius: 16,
-              child: Text('พ', style: TextStyle(color: Colors.white)),
+              child: Text('พ',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
             ),
-            SizedBox(width: 8),
-            Column(
+            const SizedBox(width: 8),
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('พัสดี', style: TextStyle(fontSize: 16)),
-                Text(
-                  'ผู้ช่วยชาวนาอัจฉริยะ',
-                  style: TextStyle(fontSize: 11, color: Colors.grey),
-                ),
+                Text('พัสดี',
+                    style:
+                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                Text('ผู้ช่วยชาวนาอัจฉริยะ',
+                    style: TextStyle(fontSize: 11, color: Colors.grey)),
               ],
+            ),
+            const Spacer(),
+            _ProviderPill(selected: preferred),
+          ],
+        ),
+        actions: [
+          IconButton(
+            tooltip: 'ล้างประวัติ',
+            icon: const Icon(Icons.delete_sweep_outlined),
+            onPressed: () =>
+                ref.read(chatbotControllerProvider.notifier).clear(),
+          ),
+          IconButton(
+            tooltip: 'เปลี่ยนผู้ช่วย',
+            icon: const Icon(Icons.tune),
+            onPressed: () => _showProviderSheet(context),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                controller: _scroll,
+                padding: const EdgeInsets.all(16),
+                itemCount: messages.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) return const _SuggestedPrompts();
+                  return ChatBubble(message: messages[index - 1]);
+                },
+              ),
+            ),
+            _InputBar(
+              controller: _input,
+              onSend: _handleSend,
             ),
           ],
         ),
       ),
-      body: Column(
-        children: [
-          // Chat messages
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final msg = _messages[index];
-                final isUser = msg['role'] == 'user';
-                return Align(
-                  alignment:
-                      isUser ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.all(12),
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.75,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isUser
-                          ? AppColors.primary
-                          : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      msg['content'] ?? '',
+    );
+  }
+
+  Future<void> _showProviderSheet(BuildContext context) async {
+    final selected = ref.read(preferredLlmProvider);
+    final providers = LlmGateway.providers;
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(24, 8, 24, 4),
+              child: Row(
+                children: [
+                  Icon(Icons.psychology_outlined),
+                  SizedBox(width: 8),
+                  Text('เลือกผู้ช่วยของพัสดี',
                       style: TextStyle(
-                        color: isUser ? Colors.white : Colors.black87,
-                      ),
-                    ),
-                  ),
-                );
-              },
+                          fontSize: 16, fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                'พัสดีใช้ LLM แต่ละตัวต่างกัน เพื่อเปรียบเทียบคุณภาพคำตอบ',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            const Divider(),
+            ...providers.map((p) => RadioListTile<String>(
+                  value: p.id,
+                  groupValue: selected,
+                  title: Text(p.displayName),
+                  subtitle: Text(p.model),
+                  onChanged: (v) => Navigator.of(ctx).pop(v),
+                )),
+          ],
+        ),
+      ),
+    );
+    if (picked != null) {
+      ref.read(preferredLlmProvider.notifier).state = picked;
+    }
+  }
+}
+
+class _ProviderPill extends StatelessWidget {
+  final String selected;
+  const _ProviderPill({required this.selected});
+
+  @override
+  Widget build(BuildContext context) {
+    final display = LlmGateway.providers
+        .firstWhere((p) => p.id == selected,
+            orElse: () => LlmGateway.providers.first)
+        .displayName;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        display,
+        style: const TextStyle(
+          color: AppColors.primary,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _InputBar extends StatelessWidget {
+  final TextEditingController controller;
+  final VoidCallback onSend;
+  const _InputBar({required this.controller, required this.onSend});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 8, 8, 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.05), blurRadius: 8),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              minLines: 1,
+              maxLines: 4,
+              textInputAction: TextInputAction.send,
+              decoration: const InputDecoration(
+                hintText: 'ถามพัสดีได้เลยครับ...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(24)),
+                ),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              ),
+              onSubmitted: (_) => onSend(),
             ),
           ),
+          const SizedBox(width: 8),
+          CircleAvatar(
+            backgroundColor: AppColors.primary,
+            child: IconButton(
+              icon: const Icon(Icons.send, color: Colors.white),
+              onPressed: onSend,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-          // Input bar
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
+class _SuggestedPrompts extends ConsumerWidget {
+  const _SuggestedPrompts();
+
+  static const _prompts = [
+    'ข้าวพันธุ์ไหนเหมาะกับภาคกลางในช่วงฝนแล้ง',
+    'ฝนตกหนักติดต่อกัน 3 วัน ควรดูแลนาอย่างไร',
+    'ลดต้นทุนปุ๋ยเคมีได้อย่างไรบ้าง',
+  ];
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('คำถามยอดนิยม',
+              style: Theme.of(context).textTheme.labelMedium),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final p in _prompts)
+                ActionChip(
+                  label: Text(p),
+                  onPressed: () =>
+                      ref.read(chatbotControllerProvider.notifier).send(p),
                 ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: const InputDecoration(
-                      hintText: 'ถามพัสดีได้เลยครับ...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(24)),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: _sendMessage,
-                  icon: const Icon(Icons.send),
-                  color: AppColors.primary,
-                ),
-              ],
-            ),
+            ],
           ),
         ],
       ),

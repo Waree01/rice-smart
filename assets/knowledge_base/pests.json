@@ -1,0 +1,60 @@
+{
+  "_meta": {
+    "version": "0.1.0",
+    "lastUpdated": "2026-04-24",
+    "source": "Thai Rice Department, IRRI pest reference",
+    "language": "th"
+  },
+  "pests": [
+    {
+      "id": "brown_planthopper",
+      "nameTh": "เพลี้ยกระโดดสีน้ำตาล",
+      "nameEn": "Brown Planthopper",
+      "scientific": "Nilaparvata lugens",
+      "damage": "ดูดน้ำเลี้ยงบริเวณโคนกอ ทำให้ต้นเหลืองและแห้งตาย (Hopperburn) และเป็นพาหะโรคเขียวเตี้ย",
+      "recommendation": "ระบายน้ำให้แห้ง 3–5 วันเพื่อลดที่อยู่อาศัย ฉีด dinotefuran หรือ buprofezin ใต้กอในช่วงเย็น ระวังอย่าใช้สารกลุ่ม pyrethroid เพราะกระตุ้นการระบาดซ้ำครับ",
+      "threshold": "ตัวเต็มวัย 10 ตัวต่อกอ หรือ 1 ตัวต่อใบธง",
+      "biocontrol": ["ด้วงเต่าลาย", "แมงมุมเขียว", "ผีเสื้อแตนเบียน Anagrus"]
+    },
+    {
+      "id": "rice_stem_borer",
+      "nameTh": "หนอนกอข้าว",
+      "nameEn": "Yellow Stem Borer",
+      "scientific": "Scirpophaga incertulas",
+      "damage": "หนอนเจาะลำต้น ทำให้ยอดเหี่ยว (dead heart) และรวงขาว (white head) เมื่อเจาะช่วงออกรวง",
+      "recommendation": "วางกับดักแสงไฟช่วงกลางคืน ปล่อยแตนเบียน Trichogramma ทุก 7 วัน หากพบมากกว่า 10% ของต้น ฉีด chlorantraniliprole ทางใบครับ",
+      "threshold": "ยอดเหี่ยว > 10% ในแปลง หรือพบกลุ่มไข่ 1 กลุ่มต่อ 5 กอ",
+      "biocontrol": ["แตนเบียน Trichogramma japonicum", "แมงมุม"]
+    },
+    {
+      "id": "rice_leaffolder",
+      "nameTh": "หนอนห่อใบข้าว",
+      "nameEn": "Rice Leaffolder",
+      "scientific": "Cnaphalocrocis medinalis",
+      "damage": "หนอนม้วนใบเป็นหลอดและแทะใบเหลือแต่เส้นใบ ใบขาว ลดพื้นที่สังเคราะห์แสง",
+      "recommendation": "ปล่อยน้ำลึก 5 ซม. เพื่อจมหลอดใบ ฉีด emamectin benzoate หรือ spinosad เมื่อพบหนอน > 5 ตัวต่อกอครับ",
+      "threshold": "ใบเสียหาย > 15% ในช่วงแตกกอถึงตั้งท้อง",
+      "biocontrol": ["แตนเบียน Cotesia", "มวนเพชฌฆาต"]
+    },
+    {
+      "id": "rice_bug",
+      "nameTh": "มวนเขียว",
+      "nameEn": "Rice Bug",
+      "scientific": "Leptocorisa oratorius",
+      "damage": "ดูดน้ำเลี้ยงในเมล็ดระยะน้ำนม ทำให้เมล็ดลีบหรือมีรอยดำ",
+      "recommendation": "เดินสำรวจช่วงเช้าและเย็น ใช้มุ้งตาข่ายช่วงออกรวง ฉีด lambda-cyhalothrin เมื่อพบ > 5 ตัว/สวีป 10 ครั้งครับ",
+      "threshold": "5 ตัวต่อสวีป 10 ครั้งในช่วงออกรวง",
+      "biocontrol": ["แมงมุม", "นก", "มวนเพชฌฆาต"]
+    },
+    {
+      "id": "golden_apple_snail",
+      "nameTh": "หอยเชอรี่",
+      "nameEn": "Golden Apple Snail",
+      "scientific": "Pomacea canaliculata",
+      "damage": "กัดกินต้นข้าวอ่อนระยะปักดำ 7–15 วัน ทำให้ต้นข้าวตายเป็นหย่อม",
+      "recommendation": "วางกิ่งไม้ล่อในคันนา เก็บหอยและไข่ทุกวัน ใช้เปลือกต้นโพธิ์หรือ niclosamide หากจำเป็น ปล่อยเป็ดไทยช่วยจัดการครับ",
+      "threshold": "พบหอย > 1 ตัว/ตร.ม. ในแปลงเตรียมปักดำ",
+      "biocontrol": ["เป็ดไล่ทุ่ง", "นกกระยาง"]
+    }
+  ]
+}

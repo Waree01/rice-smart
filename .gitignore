@@ -100,3 +100,5 @@ doc/api/
 .claude/cache/
 .claude/logs/
 .claude/agents/*-memory/
+# Local issue drafts (not for the repo)
+.github/.issue-draft-*.md

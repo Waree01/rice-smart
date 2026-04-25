@@ -208,8 +208,8 @@ class WeatherService {
     final out = <_RawDay>[];
     for (final entry in forecasts.take(7)) {
       if (entry is! Map<String, dynamic>) continue;
-      final date = DateTime.tryParse(entry['time']?.toString() ?? '') ??
-          DateTime.now();
+      final date =
+          DateTime.tryParse(entry['time']?.toString() ?? '') ?? DateTime.now();
       final data = (entry['data'] as Map?) ?? const {};
       out.add(_RawDay(
         date: date,

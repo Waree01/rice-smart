@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../models/weather_forecast.dart';
 import '../providers/weather_providers.dart';
+import 'location_picker_dialog.dart';
 
 /// Weather screen — 7-day agro-forecast + disease risk + GDD.
 class WeatherScreen extends ConsumerWidget {
@@ -13,6 +14,16 @@ class WeatherScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Listen to location provider and auto-populate weatherQueryProvider when location is detected.
+    // This listener auto-disposes when the widget unmounts, per Riverpod semantics.
+    ref.listen(weatherLocationProvider, (prev, next) {
+      next.whenData((query) {
+        if (query != null) {
+          ref.read(weatherQueryProvider.notifier).state = query;
+        }
+      });
+    });
+
     final async = ref.watch(weatherForecastProvider);
 
     return Scaffold(
@@ -22,6 +33,11 @@ class WeatherScreen extends ConsumerWidget {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
+            tooltip: 'เปลี่ยนตำแหน่ง',
+            icon: const Icon(Icons.location_on),
+            onPressed: () => showLocationPickerDialog(context),
+          ),
+          IconButton(
             tooltip: 'รีเฟรช',
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.invalidate(weatherForecastProvider),
@@ -29,7 +45,11 @@ class WeatherScreen extends ConsumerWidget {
         ],
       ),
       body: async.when(
-        data: (forecast) => _Forecast(forecast: forecast),
+        data: (forecast) => forecast == null
+            ? _NoLocationState(
+                onPicker: () => showLocationPickerDialog(context),
+              )
+            : _Forecast(forecast: forecast),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => _ErrorState(
           error: e.toString(),
@@ -56,8 +76,7 @@ class _Forecast extends StatelessWidget {
         const SizedBox(height: 16),
         _GddCard(cumulative: forecast.cumulativeGdd),
         const SizedBox(height: 16),
-        Text('พยากรณ์ 7 วัน',
-            style: Theme.of(context).textTheme.titleMedium),
+        Text('พยากรณ์ 7 วัน', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         ...forecast.daily.map((d) => _DailyTile(day: d, fmt: df)),
         const SizedBox(height: 16),
@@ -74,7 +93,7 @@ class _Forecast extends StatelessWidget {
             '/chatbot',
             extra:
                 'จากพยากรณ์อากาศ 7 วันข้างหน้า ${forecast.summary} ช่วยแนะนำสิ่งที่ควรทำในแปลงนี้ที'
-                    '${forecast.provinceTh ?? ''} ให้หน่อยครับ',
+                '${forecast.provinceTh ?? ''} ให้หน่อยครับ',
           ),
           icon: const Icon(Icons.chat_outlined),
           label: const Text('ขอคำแนะนำจากพัสดีตามสภาพอากาศนี้'),
@@ -173,8 +192,7 @@ class _DiseaseRiskCard extends StatelessWidget {
                         TextStyle(color: color, fontWeight: FontWeight.bold)),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(label,
-                      style: TextStyle(color: Colors.grey[800])),
+                  child: Text(label, style: TextStyle(color: Colors.grey[800])),
                 ),
               ],
             ),
@@ -280,6 +298,36 @@ class _ErrorState extends StatelessWidget {
                 textAlign: TextAlign.center),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: onRetry, child: const Text('ลองใหม่')),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NoLocationState extends StatelessWidget {
+  final VoidCallback onPicker;
+  const _NoLocationState({required this.onPicker});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.location_off, size: 56, color: Colors.grey),
+            const SizedBox(height: 12),
+            const Text(
+              'ยังไม่ได้เลือกตำแหน่ง\nโปรดเลือกจังหวัดของคุณ',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onPicker,
+              child: const Text('เลือกจังหวัด'),
+            ),
           ],
         ),
       ),

@@ -137,7 +137,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 }
 
 class _WeatherSummaryCard extends StatelessWidget {
-  final AsyncValue<WeatherForecast> asyncForecast;
+  final AsyncValue<WeatherForecast?> asyncForecast;
   final VoidCallback onTap;
   const _WeatherSummaryCard({
     required this.asyncForecast,
@@ -153,27 +153,37 @@ class _WeatherSummaryCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: asyncForecast.when(
-            data: (f) => Row(
-              children: [
-                const Icon(Icons.wb_sunny, color: AppColors.info, size: 36),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            data: (f) => f == null
+                ? const Row(
                     children: [
-                      Text(
-                        f.provinceTh ?? 'สภาพอากาศ',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      Icon(Icons.location_off, color: Colors.grey, size: 36),
+                      SizedBox(width: 12),
+                      Expanded(
+                          child: Text(
+                              'ยังไม่ได้เลือกตำแหน่ง แตะเพื่อเลือกจังหวัด')),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      const Icon(Icons.wb_sunny, color: AppColors.info, size: 36),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              f.provinceTh ?? 'สภาพอากาศ',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(f.summary,
+                                style: TextStyle(color: Colors.grey[800])),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 2),
-                      Text(f.summary,
-                          style: TextStyle(color: Colors.grey[800])),
+                      const Icon(Icons.chevron_right),
                     ],
                   ),
-                ),
-                const Icon(Icons.chevron_right),
-              ],
-            ),
             loading: () => const SizedBox(
               height: 48,
               child: Center(child: CircularProgressIndicator()),

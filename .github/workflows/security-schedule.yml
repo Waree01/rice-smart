@@ -1,0 +1,62 @@
+name: Security — Scheduled Deep Scan
+
+# Runs nightly to catch newly disclosed CVEs in pinned dependencies.
+# Complements the per-PR security jobs in ci.yml.
+
+on:
+  schedule:
+    - cron: '0 18 * * *'  # 01:00 Bangkok time daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  issues: write  # to open issues for new findings
+
+jobs:
+  trivy-deep:
+    name: Trivy (all severities)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update Trivy DB
+        run: |
+          docker run --rm -v $PWD:/repo aquasec/trivy:latest fs --download-db-only
+
+      - name: Run Trivy with full severity
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          severity: CRITICAL,HIGH,MEDIUM,LOW
+          format: sarif
+          output: trivy-deep.sarif
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-deep.sarif
+          category: trivy-scheduled
+
+  semgrep-deep:
+    name: Semgrep (all rules)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep deep scan
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/default
+            p/dart
+            p/owasp-top-ten
+            p/secrets
+            p/security-audit
+            p/flutter
+            p/cwe-top-25
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}

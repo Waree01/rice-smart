@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +9,17 @@ import '../../../core/services/benchmark_runner.dart';
 import '../../../core/services/llm_gateway.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../chatbot/providers/chatbot_providers.dart';
+
+/// Load benchmark_questions.json from the asset bundle.
+/// Lives here (not in BenchmarkRunner) so the runner stays Flutter-free
+/// and can run under a plain `dart run` from `scripts/run_benchmark.dart`.
+Future<List<BenchmarkQuestion>> _loadBundledQuestions() async {
+  final raw = await rootBundle
+      .loadString('assets/knowledge_base/benchmark_questions.json');
+  final root = json.decode(raw) as Map<String, dynamic>;
+  final list = (root['questions'] as List).cast<Map<String, dynamic>>();
+  return list.map(BenchmarkQuestion.fromJson).toList();
+}
 
 /// Developer / thesis screen: runs every benchmark question against
 /// every configured LLM provider and tabulates the results.
@@ -36,7 +49,7 @@ class _BenchmarkScreenState extends ConsumerState<BenchmarkScreen> {
       _summary = {};
     });
     try {
-      _questions = await runner.loadQuestions();
+      _questions = await _loadBundledQuestions();
       final results = await runner.run(
         questions: _questions,
         providers: _selectedProviders.toList(),

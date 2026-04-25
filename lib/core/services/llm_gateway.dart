@@ -35,7 +35,7 @@ class LlmGateway {
     'claude': _LlmConfig(
       displayName: 'Claude',
       baseUrl: 'https://api.anthropic.com/v1',
-      model: 'claude-sonnet-4-5',
+      model: 'claude-sonnet-4-5-20250929',
       endpoint: '/messages',
     ),
     'gpt': _LlmConfig(
@@ -47,8 +47,8 @@ class LlmGateway {
     'gemini': _LlmConfig(
       displayName: 'Gemini',
       baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
-      model: 'gemini-1.5-pro',
-      endpoint: '/models/gemini-1.5-pro:generateContent',
+      model: 'gemini-2.5-flash',
+      endpoint: '/models/gemini-2.5-flash:generateContent',
     ),
     'typhoon': _LlmConfig(
       displayName: 'Typhoon',
@@ -145,7 +145,15 @@ class LlmGateway {
         );
       } catch (e, s) {
         usage[provider]!.failure++;
-        _logger.w('$provider failed; trying next', error: e);
+        // Surface the API response body for easier debugging — Dio
+        // hides it inside DioException.response.
+        if (e is DioException && e.response != null) {
+          _logger.w(
+              '$provider failed (${e.response?.statusCode}): ${e.response?.data}',
+              error: e);
+        } else {
+          _logger.w('$provider failed; trying next', error: e);
+        }
         lastError = e;
         lastStack = s;
       }

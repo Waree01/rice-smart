@@ -106,7 +106,7 @@ class MultimodalVisionService {
     final resp = await _dio.post<Map<String, dynamic>>(
       'https://api.anthropic.com/v1/messages',
       data: {
-        'model': 'claude-sonnet-4-5',
+        'model': 'claude-sonnet-4-5-20250929',
         'max_tokens': 1024,
         'messages': [
           {
@@ -153,7 +153,7 @@ class MultimodalVisionService {
   ) async {
     final resp = await _dio.post<Map<String, dynamic>>(
       'https://generativelanguage.googleapis.com/v1beta/models/'
-      'gemini-1.5-pro:generateContent',
+      'gemini-2.5-flash:generateContent',
       queryParameters: {'key': apiKey},
       data: {
         'contents': [

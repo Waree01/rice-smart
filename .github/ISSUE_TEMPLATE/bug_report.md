@@ -1,29 +1,42 @@
 ---
-name: Bug Report
-about: Report a bug in rice-smart
-title: '[BUG] '
-labels: bug
-assignees: nenoteerawat
+name: Bug report
+about: Report a defect in RiceSmart
+title: "fix: <short description>"
+labels: ["bug", "needs-triage"]
+assignees: []
 ---
 
 ## Description
-A clear description of the bug.
+<!-- What's broken? -->
 
-## Steps to Reproduce
-1. Go to '...'
-2. Tap on '...'
-3. See error
+## Steps to reproduce
+1.
+2.
+3.
 
-## Expected Behavior
-What should happen.
+## Expected behavior
 
-## Actual Behavior
-What actually happens.
+## Actual behavior
 
-## Screenshots
-If applicable, add screenshots.
+## Environment
+- Device: <model + OS version>
+- App version: <semver>
+- Network: <wifi / 4G / offline>
+- Language: <Thai / English>
 
-## Device Info
-- Device: [e.g. Samsung Galaxy S24]
-- OS: [e.g. Android 14]
-- App Version: [e.g. 0.1.0]
+## Logs / screenshots
+<!-- Attach Flutter logs (`flutter logs`), Crashlytics report, or screenshots -->
+
+## Severity
+- [ ] CRITICAL — app crashes / data loss / security issue
+- [ ] HIGH — core feature unusable
+- [ ] MEDIUM — feature partially broken, workaround exists
+- [ ] LOW — cosmetic / edge case
+
+## Affected feature
+- [ ] Disease detection
+- [ ] Pest identification
+- [ ] Pasadee chatbot
+- [ ] Weather
+- [ ] Authentication
+- [ ] Other: <describe>

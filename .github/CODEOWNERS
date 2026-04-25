@@ -1,0 +1,22 @@
+# RiceSmart code ownership
+# Each line maps a path pattern to GitHub users/teams who must review changes.
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner — applies to anything not matched below
+*                                @nenoteerawat
+
+# Security-sensitive areas — require owner review
+.github/workflows/                @nenoteerawat
+.github/CODEOWNERS                @nenoteerawat
+SECURITY.md                       @nenoteerawat
+scripts/                          @nenoteerawat
+.claude/                          @nenoteerawat
+CLAUDE.md                         @nenoteerawat
+
+# Auth and crypto
+lib/core/services/llm_gateway.dart @nenoteerawat
+lib/core/services/auth/           @nenoteerawat
+lib/core/services/storage/        @nenoteerawat
+
+# ML model assets — changes require model versioning audit
+assets/models/                    @nenoteerawat

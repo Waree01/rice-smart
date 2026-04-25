@@ -25,12 +25,14 @@ dependencies:
   dio: ^5.4.0
   connectivity_plus: ^5.0.2
 
-  # Firebase (optional — configured at build time with google-services files)
-  firebase_core: ^4.7.0
-  firebase_auth: ^6.4.0
-  cloud_firestore: ^6.3.0
-  firebase_messaging: ^16.2.0
-  firebase_analytics: ^12.3.0
+  # Firebase (commented out — pulls in heavy native pods we don't use yet
+  # because Firebase is never actually initialized in main.dart. Re-enable
+  # once google-services.json / GoogleService-Info.plist are provisioned.)
+  # firebase_core: ^4.7.0
+  # firebase_auth: ^6.4.0
+  # cloud_firestore: ^6.3.0
+  # firebase_messaging: ^16.2.0
+  # firebase_analytics: ^12.3.0
 
   # Local Storage
   hive: ^2.2.3
@@ -102,6 +104,9 @@ flutter:
     - assets/knowledge_base/
     # `.env.example` ships empty keys so the app boots even without a local override.
     # Developers copy it to `.env` (gitignored) to inject real credentials.
+    # `.env` is also an asset because flutter_dotenv loads from the asset
+    # bundle, not the filesystem; the file is gitignored so secrets stay local.
+    - .env
     - .env.example
 
   # fonts:

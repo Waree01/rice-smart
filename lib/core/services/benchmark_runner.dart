@@ -1,9 +1,10 @@
-import 'dart:convert';
-
-import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 
 import 'llm_gateway.dart';
+
+// Note: this file is intentionally Flutter-free so it can run under a
+// plain `dart run` for offline benchmarking. Question loading happens
+// in the caller (UI uses rootBundle; CLI reads from File directly).
 
 /// A single question from the thesis Q&A benchmark.
 class BenchmarkQuestion {
@@ -79,14 +80,6 @@ class BenchmarkRunner {
   final LlmGateway _gateway;
   final Logger _logger;
 
-  /// Load the benchmark questions from the bundled asset.
-  Future<List<BenchmarkQuestion>> loadQuestions() async {
-    final raw = await rootBundle
-        .loadString('assets/knowledge_base/benchmark_questions.json');
-    final json_ = json.decode(raw) as Map<String, dynamic>;
-    final list = (json_['questions'] as List).cast<Map<String, dynamic>>();
-    return list.map(BenchmarkQuestion.fromJson).toList();
-  }
 
   /// Run [questions] across [providers] using [apiKeys]. Progress is
   /// streamed through [onProgress] (current, total).

@@ -49,6 +49,16 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>RiceSmart ใช้กล้องเพื่อถ่ายรูปใบข้าวและศัตรูพืชสำหรับวินิจฉัยด้วย AI บนเครื่อง</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>RiceSmart ใช้คลังภาพเพื่อเลือกรูปใบข้าว/ศัตรูพืชสำหรับวินิจฉัย</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>RiceSmart ใช้ไมโครโฟนเพื่อรับฟังคำถามภาษาไทยจากชาวนา (Pasadee voice input)</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>RiceSmart ใช้ Speech Recognition เพื่อแปลงเสียงเป็นข้อความ</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>RiceSmart ใช้ตำแหน่งเพื่อพยากรณ์อากาศและระบุการระบาดของโรคในชุมชน (geohash 4.9km cell)</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

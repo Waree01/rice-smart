@@ -84,3 +84,19 @@ coverage/
 *.tmp
 *.bak
 doc/api/
+
+# Claude Code — what to share vs keep private
+# Commit these (they define your team's agents):
+#   .claude/agents/
+#   CLAUDE.md
+#   .claude/settings.json     ← optional: team defaults
+
+# Ignore these (per-machine, sensitive, or noisy):
+.claude/settings.local.json
+.claude/.credentials*
+.claude/projects/
+.claude/todos/
+.claude/statsig/
+.claude/cache/
+.claude/logs/
+.claude/agents/*-memory/

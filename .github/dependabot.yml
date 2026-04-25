@@ -1,0 +1,58 @@
+version: 2
+# Dependabot keeps dependencies fresh — feeds @security-auditor with up-to-date pubspec.lock
+
+updates:
+  - package-ecosystem: "pub"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Bangkok"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "automated"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      flutter-core:
+        patterns:
+          - "flutter_*"
+          - "riverpod*"
+          - "go_router*"
+      firebase:
+        patterns:
+          - "firebase_*"
+          - "cloud_firestore*"
+      ml:
+        patterns:
+          - "tflite*"
+          - "image*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "ci"
+      - "automated"
+    commit-message:
+      prefix: "ci"
+
+  - package-ecosystem: "gradle"
+    directory: "/android"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "android"
+      - "dependencies"
+
+  - package-ecosystem: "bundler"
+    directory: "/ios"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "ios"
+      - "dependencies"

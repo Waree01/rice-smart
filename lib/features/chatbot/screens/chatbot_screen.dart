@@ -41,7 +41,9 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     if (!_didSeed && widget.initialPrompt != null) {
       _didSeed = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(chatbotControllerProvider.notifier).send(widget.initialPrompt!);
+        ref
+            .read(chatbotControllerProvider.notifier)
+            .send(widget.initialPrompt!);
       });
     }
   }
@@ -124,19 +126,26 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
             const CircleAvatar(
               backgroundColor: AppColors.primary,
               radius: 16,
-              child: Text('พ',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold)),
+              child: Text(
+                'พ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             const SizedBox(width: 8),
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('พัสดี',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                Text('ผู้ช่วยชาวนาอัจฉริยะ',
-                    style: TextStyle(fontSize: 11, color: Colors.grey)),
+                Text(
+                  'พัสดี',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  'ผู้ช่วยชาวนาอัจฉริยะ',
+                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                ),
               ],
             ),
             const Spacer(),
@@ -145,8 +154,11 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                 padding: EdgeInsets.only(right: 6),
                 child: Tooltip(
                   message: 'RAG พร้อมใช้',
-                  child: Icon(Icons.auto_stories,
-                      size: 16, color: AppColors.primary),
+                  child: Icon(
+                    Icons.auto_stories,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
                 ),
               ),
             _ProviderPill(selected: preferred),
@@ -217,9 +229,10 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                 children: [
                   Icon(Icons.psychology_outlined),
                   SizedBox(width: 8),
-                  Text('เลือกผู้ช่วยของพัสดี',
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.w600)),
+                  Text(
+                    'เลือกผู้ช่วยของพัสดี',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                 ],
               ),
             ),
@@ -231,13 +244,17 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
               ),
             ),
             const Divider(),
-            ...providers.map((p) => RadioListTile<String>(
-                  value: p.id,
-                  groupValue: selected,
-                  title: Text(p.displayName),
-                  subtitle: Text(p.model),
-                  onChanged: (v) => Navigator.of(ctx).pop(v),
-                )),
+            ...providers.map(
+              (p) => RadioListTile<String>(
+                value: p.id,
+                // ignore: deprecated_member_use
+                groupValue: selected,
+                title: Text(p.displayName),
+                subtitle: Text(p.model),
+                // ignore: deprecated_member_use
+                onChanged: (v) => Navigator.of(ctx).pop(v),
+              ),
+            ),
           ],
         ),
       ),
@@ -255,13 +272,15 @@ class _ProviderPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final display = LlmGateway.providers
-        .firstWhere((p) => p.id == selected,
-            orElse: () => LlmGateway.providers.first)
+        .firstWhere(
+          (p) => p.id == selected,
+          orElse: () => LlmGateway.providers.first,
+        )
         .displayName;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.12),
+        color: AppColors.primary.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -295,8 +314,7 @@ class _InputBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.05), blurRadius: 8),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
         ],
       ),
       child: Row(
@@ -316,13 +334,12 @@ class _InputBar extends StatelessWidget {
               maxLines: 4,
               textInputAction: TextInputAction.send,
               decoration: InputDecoration(
-                hintText:
-                    listening ? 'กำลังฟัง...' : 'ถามพัสดีได้เลยครับ...',
+                hintText: listening ? 'กำลังฟัง...' : 'ถามพัสดีได้เลยครับ...',
                 border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(24)),
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 10),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               ),
               onSubmitted: (_) => onSend(),
             ),
@@ -357,8 +374,7 @@ class _SuggestedPrompts extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('คำถามยอดนิยม',
-              style: Theme.of(context).textTheme.labelMedium),
+          Text('คำถามยอดนิยม', style: Theme.of(context).textTheme.labelMedium),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,

@@ -37,16 +37,14 @@ class CommunityScreen extends ConsumerWidget {
         children: [
           _OutbreakSection(async: outbreaks),
           const SizedBox(height: 16),
-          Text('รายงานล่าสุด',
-              style: Theme.of(context).textTheme.titleMedium),
+          Text('รายงานล่าสุด', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           reports.when(
             data: (list) => list.isEmpty
                 ? const _Empty()
                 : Column(
                     children: [
-                      for (final r in list.take(30))
-                        _ReportTile(report: r),
+                      for (final r in list.take(30)) _ReportTile(report: r),
                     ],
                   ),
             loading: () => const Padding(
@@ -76,13 +74,13 @@ class _OutbreakSection extends StatelessWidget {
       data: (clusters) {
         if (clusters.isEmpty) {
           return Card(
-            color: AppColors.success.withOpacity(0.08),
+            color: AppColors.success.withValues(alpha: 0.08),
             child: const ListTile(
-              leading: Icon(Icons.verified_outlined,
-                  color: AppColors.success),
+              leading: Icon(Icons.verified_outlined, color: AppColors.success),
               title: Text('ยังไม่พบการระบาดในชุมชนของคุณ'),
               subtitle: Text(
-                  'ระบบจะแจ้งเตือนเมื่อมีรายงานกระจุกตัวในพื้นที่เดียวกัน'),
+                'ระบบจะแจ้งเตือนเมื่อมีรายงานกระจุกตัวในพื้นที่เดียวกัน',
+              ),
             ),
           );
         }
@@ -105,7 +103,7 @@ class _OutbreakTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.diseaseCritical.withOpacity(0.08),
+      color: AppColors.diseaseCritical.withValues(alpha: 0.08),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Row(
@@ -129,8 +127,7 @@ class _OutbreakTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'รายแรก: ${_fmt(cluster.firstReport)}  ·  ล่าสุด: ${_fmt(cluster.lastReport)}',
-                    style: TextStyle(
-                        color: Colors.grey[700], fontSize: 12),
+                    style: TextStyle(color: Colors.grey[700], fontSize: 12),
                   ),
                 ],
               ),

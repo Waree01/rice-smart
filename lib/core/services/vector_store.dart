@@ -27,8 +27,9 @@ class Document {
         text: json['text'] as String,
         category: json['category'] as String,
         metadata: (json['metadata'] as Map).cast<String, dynamic>(),
-        embedding:
-            (json['embedding'] as List).map((e) => (e as num).toDouble()).toList(),
+        embedding: (json['embedding'] as List)
+            .map((e) => (e as num).toDouble())
+            .toList(),
       );
 }
 
@@ -81,14 +82,13 @@ class VectorStore {
 
   /// Serialize the whole store. Useful to cache embeddings to disk so
   /// we only pay the HuggingFace cost once per corpus version.
-  List<Map<String, dynamic>> toJson() =>
-      _docs.map((d) => d.toJson()).toList();
+  List<Map<String, dynamic>> toJson() => _docs.map((d) => d.toJson()).toList();
 
   void loadJson(List<dynamic> raw) {
     _docs
       ..clear()
-      ..addAll(raw
-          .cast<Map<String, dynamic>>()
-          .map((m) => Document.fromJson(m)));
+      ..addAll(
+        raw.cast<Map<String, dynamic>>().map((m) => Document.fromJson(m)),
+      );
   }
 }

@@ -32,8 +32,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final profile = ref.read(profileControllerProvider);
     _nameCtrl = TextEditingController(text: profile?.name ?? '');
     _provinceCtrl = TextEditingController(text: profile?.provinceTh ?? '');
-    _sizeCtrl = TextEditingController(
-        text: profile?.farmSizeRai?.toString() ?? '');
+    _sizeCtrl =
+        TextEditingController(text: profile?.farmSizeRai?.toString() ?? '');
     _language = profile?.language ?? 'th';
   }
 
@@ -81,7 +81,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 await ref.read(profileControllerProvider.notifier).clear();
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('ล้างข้อมูลแล้ว')));
+                  const SnackBar(content: Text('ล้างข้อมูลแล้ว')),
+                );
               },
             ),
         ],
@@ -124,18 +125,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text('ภาษาที่ใช้คุย',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'ภาษาที่ใช้คุย',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               RadioListTile<String>(
                 value: 'th',
+                // ignore: deprecated_member_use
                 groupValue: _language,
                 title: const Text('ไทย'),
+                // ignore: deprecated_member_use
                 onChanged: (v) => setState(() => _language = v ?? 'th'),
               ),
               RadioListTile<String>(
                 value: 'en',
+                // ignore: deprecated_member_use
                 groupValue: _language,
                 title: const Text('English'),
+                // ignore: deprecated_member_use
                 onChanged: (v) => setState(() => _language = v ?? 'th'),
               ),
               const SizedBox(height: 24),
@@ -166,7 +173,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final isEdit = profile != null;
     return Card(
-      color: AppColors.primaryLight.withOpacity(0.1),
+      color: AppColors.primaryLight.withValues(alpha: 0.1),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -181,9 +188,13 @@ class _Header extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(isEdit ? 'แก้ไขข้อมูลชาวนา' : 'สร้างโปรไฟล์',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(
+                    isEdit ? 'แก้ไขข้อมูลชาวนา' : 'สร้างโปรไฟล์',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Text(
                     isEdit

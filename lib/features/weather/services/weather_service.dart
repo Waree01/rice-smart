@@ -17,10 +17,12 @@ class WeatherService {
 
   WeatherService({Dio? dio, Logger? logger})
       : _dio = dio ??
-            Dio(BaseOptions(
-              connectTimeout: const Duration(seconds: 15),
-              receiveTimeout: const Duration(seconds: 15),
-            )),
+            Dio(
+              BaseOptions(
+                connectTimeout: const Duration(seconds: 15),
+                receiveTimeout: const Duration(seconds: 15),
+              ),
+            ),
         _logger = logger ?? Logger();
 
   /// Load a 7-day agro-weather forecast for ([lat], [lon]).
@@ -54,8 +56,10 @@ class WeatherService {
         provinceTh: provinceTh,
       );
     } catch (e) {
-      _logger.e('All weather sources failed — returning synthetic week',
-          error: e);
+      _logger.e(
+        'All weather sources failed — returning synthetic week',
+        error: e,
+      );
       return _buildForecast(
         raw: const {},
         source: 'synthetic',
@@ -80,10 +84,12 @@ class WeatherService {
         'fields': 'tc,rh,rain,ws10m,cond',
         'duration': 7,
       },
-      options: Options(headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Accept': 'application/json',
-      }),
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Accept': 'application/json',
+        },
+      ),
     );
     return resp.data ?? const {};
   }
@@ -211,14 +217,16 @@ class WeatherService {
       final date =
           DateTime.tryParse(entry['time']?.toString() ?? '') ?? DateTime.now();
       final data = (entry['data'] as Map?) ?? const {};
-      out.add(_RawDay(
-        date: date,
-        temperature: (data['tc'] as num?)?.toDouble() ?? 28.0,
-        humidity: (data['rh'] as num?)?.toDouble() ?? 80.0,
-        rainfall: (data['rain'] as num?)?.toDouble() ?? 0.0,
-        windSpeed: (data['ws10m'] as num?)?.toDouble() ?? 2.0,
-        condition: _tmdCondition(data['cond']),
-      ));
+      out.add(
+        _RawDay(
+          date: date,
+          temperature: (data['tc'] as num?)?.toDouble() ?? 28.0,
+          humidity: (data['rh'] as num?)?.toDouble() ?? 80.0,
+          rainfall: (data['rain'] as num?)?.toDouble() ?? 0.0,
+          windSpeed: (data['ws10m'] as num?)?.toDouble() ?? 2.0,
+          condition: _tmdCondition(data['cond']),
+        ),
+      );
     }
     return out.isEmpty ? _syntheticWeek() : out;
   }
@@ -237,14 +245,16 @@ class WeatherService {
       final y = int.tryParse(k.substring(0, 4)) ?? DateTime.now().year;
       final m = int.tryParse(k.substring(4, 6)) ?? DateTime.now().month;
       final d = int.tryParse(k.substring(6, 8)) ?? DateTime.now().day;
-      out.add(_RawDay(
-        date: DateTime(y, m, d),
-        temperature: t[k]?.toDouble() ?? 28.0,
-        humidity: rh[k]?.toDouble() ?? 80.0,
-        rainfall: rain[k]?.toDouble() ?? 0.0,
-        windSpeed: wind[k]?.toDouble() ?? 2.0,
-        condition: 'ปกติ',
-      ));
+      out.add(
+        _RawDay(
+          date: DateTime(y, m, d),
+          temperature: t[k]?.toDouble() ?? 28.0,
+          humidity: rh[k]?.toDouble() ?? 80.0,
+          rainfall: rain[k]?.toDouble() ?? 0.0,
+          windSpeed: wind[k]?.toDouble() ?? 2.0,
+          condition: 'ปกติ',
+        ),
+      );
     }
     return out.isEmpty ? _syntheticWeek() : out;
   }

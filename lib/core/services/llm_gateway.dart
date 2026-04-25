@@ -27,7 +27,8 @@ class LlmGateway {
   };
 
   LlmGateway({Dio? dio, Logger? logger})
-      : _dio = dio ?? Dio(BaseOptions(connectTimeout: const Duration(seconds: 20))),
+      : _dio = dio ??
+            Dio(BaseOptions(connectTimeout: const Duration(seconds: 20))),
         _logger = logger ?? Logger();
 
   // ── Provider catalogue ────────────────────────────────────────────
@@ -73,11 +74,13 @@ class LlmGateway {
 
   /// Public provider metadata (id → display name / model).
   static List<LlmProviderInfo> get providers => _providers.entries
-      .map((e) => LlmProviderInfo(
-            id: e.key,
-            displayName: e.value.displayName,
-            model: e.value.model,
-          ))
+      .map(
+        (e) => LlmProviderInfo(
+          id: e.key,
+          displayName: e.value.displayName,
+          model: e.value.model,
+        ),
+      )
       .toList();
 
   /// Default priority ordering used by fail-over.
@@ -149,8 +152,9 @@ class LlmGateway {
         // hides it inside DioException.response.
         if (e is DioException && e.response != null) {
           _logger.w(
-              '$provider failed (${e.response?.statusCode}): ${e.response?.data}',
-              error: e);
+            '$provider failed (${e.response?.statusCode}): ${e.response?.data}',
+            error: e,
+          );
         } else {
           _logger.w('$provider failed; trying next', error: e);
         }
@@ -268,10 +272,12 @@ class LlmGateway {
         'temperature': 0.4,
         'max_tokens': 1024,
       },
-      options: Options(headers: {
-        'authorization': 'Bearer $apiKey',
-        'content-type': 'application/json',
-      }),
+      options: Options(
+        headers: {
+          'authorization': 'Bearer $apiKey',
+          'content-type': 'application/json',
+        },
+      ),
     );
 
     final choices = (resp.data?['choices'] as List?) ?? const [];
@@ -298,13 +304,13 @@ class LlmGateway {
           {
             'role': m.role == ChatRole.user ? 'user' : 'model',
             'parts': [
-              {'text': m.content}
+              {'text': m.content},
             ],
           },
       {
         'role': 'user',
         'parts': [
-          {'text': userMessage}
+          {'text': userMessage},
         ],
       },
     ];
@@ -316,8 +322,8 @@ class LlmGateway {
         'contents': contents,
         'systemInstruction': {
           'parts': [
-            {'text': systemPrompt}
-          ]
+            {'text': systemPrompt},
+          ],
         },
         'generationConfig': {
           'temperature': 0.4,
@@ -331,8 +337,8 @@ class LlmGateway {
     if (candidates.isEmpty) {
       throw const LlmGatewayException('Gemini ตอบกลับโดยไม่มี candidates');
     }
-    final parts = ((candidates.first as Map)['content'] as Map?)?['parts']
-        as List?;
+    final parts =
+        ((candidates.first as Map)['content'] as Map?)?['parts'] as List?;
     if (parts != null) {
       for (final part in parts) {
         if (part is Map && part['text'] is String) {
@@ -371,10 +377,12 @@ class LlmGateway {
         'max_tokens': 1024,
         'temperature': 0.4,
       },
-      options: Options(headers: {
-        'authorization': 'Bearer $apiKey',
-        'content-type': 'application/json',
-      }),
+      options: Options(
+        headers: {
+          'authorization': 'Bearer $apiKey',
+          'content-type': 'application/json',
+        },
+      ),
     );
 
     final choices = (resp.data?['choices'] as List?) ?? const [];

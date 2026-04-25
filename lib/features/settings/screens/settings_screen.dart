@@ -41,9 +41,11 @@ class SettingsScreen extends ConsumerWidget {
           for (final p in LlmGateway.providers)
             RadioListTile<String>(
               value: p.id,
+              // ignore: deprecated_member_use
               groupValue: preferred,
               title: Text(p.displayName),
               subtitle: Text(p.model),
+              // ignore: deprecated_member_use
               onChanged: (v) {
                 if (v != null) {
                   ref.read(preferredLlmProvider.notifier).state = v;
@@ -53,19 +55,22 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
           const _SectionHeader(title: 'RAG Embedding Backend'),
           ListTile(
-            leading: Icon(ragReady
-                ? Icons.check_circle
-                : Icons.pending_outlined),
-            title: Text(ragReady
-                ? 'RAG index พร้อมใช้'
-                : 'RAG ยังไม่พร้อม (ตรวจ API key)'),
+            leading:
+                Icon(ragReady ? Icons.check_circle : Icons.pending_outlined),
+            title: Text(
+              ragReady
+                  ? 'RAG index พร้อมใช้'
+                  : 'RAG ยังไม่พร้อม (ตรวจ API key)',
+            ),
             subtitle: const Text('เปลี่ยน backend เพื่องานวิจัยเปรียบเทียบ'),
           ),
           RadioListTile<EmbeddingBackend>(
             value: EmbeddingBackend.wangchanberta,
+            // ignore: deprecated_member_use
             groupValue: embedding,
             title: const Text('WangchanBERTa (Thai-native)'),
             subtitle: const Text('ผ่าน HuggingFace Inference API'),
+            // ignore: deprecated_member_use
             onChanged: (v) {
               if (v != null) {
                 ref.read(embeddingBackendProvider.notifier).state = v;
@@ -74,9 +79,11 @@ class SettingsScreen extends ConsumerWidget {
           ),
           RadioListTile<EmbeddingBackend>(
             value: EmbeddingBackend.openai,
+            // ignore: deprecated_member_use
             groupValue: embedding,
             title: const Text('OpenAI text-embedding-3-small'),
             subtitle: const Text('Multilingual baseline'),
+            // ignore: deprecated_member_use
             onChanged: (v) {
               if (v != null) {
                 ref.read(embeddingBackendProvider.notifier).state = v;
@@ -110,7 +117,8 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: const Text('SECURITY.md'),
             onTap: () => launchUrl(
               Uri.parse(
-                  'https://github.com/nenoteerawat/rice-smart/blob/main/SECURITY.md'),
+                'https://github.com/nenoteerawat/rice-smart/blob/main/SECURITY.md',
+              ),
               mode: LaunchMode.externalApplication,
             ),
           ),
@@ -128,8 +136,7 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.restart_alt, color: Colors.red),
             title: const Text('ล้างการตั้งค่าและ onboarding'),
-            subtitle:
-                const Text('แอปจะแสดง onboarding อีกครั้งในครั้งถัดไป'),
+            subtitle: const Text('แอปจะแสดง onboarding อีกครั้งในครั้งถัดไป'),
             onTap: () async {
               final prefs = await SharedPreferences.getInstance();
               await prefs.remove(AppConstants.onboardingKey);

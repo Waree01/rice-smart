@@ -121,7 +121,7 @@ class _HeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.info.withOpacity(0.08),
+      color: AppColors.info.withValues(alpha: 0.08),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -141,8 +141,10 @@ class _HeaderCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(forecast.summary,
-                style: const TextStyle(fontSize: 15, height: 1.4)),
+            Text(
+              forecast.summary,
+              style: const TextStyle(fontSize: 15, height: 1.4),
+            ),
           ],
         ),
       ),
@@ -175,8 +177,10 @@ class _DiseaseRiskCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('ดัชนีความเสี่ยงโรค (สัปดาห์นี้)',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'ดัชนีความเสี่ยงโรค (สัปดาห์นี้)',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             LinearProgressIndicator(
               value: risk,
@@ -187,9 +191,10 @@ class _DiseaseRiskCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                Text('$pct%',
-                    style:
-                        TextStyle(color: color, fontWeight: FontWeight.bold)),
+                Text(
+                  '$pct%',
+                  style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(label, style: TextStyle(color: Colors.grey[800])),
@@ -220,8 +225,10 @@ class _GddCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Growing Degree Days (7 วัน)',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Growing Degree Days (7 วัน)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   Text(
                     '${cumulative.toStringAsFixed(1)} GDD',
                     style: const TextStyle(fontSize: 20),
@@ -294,8 +301,10 @@ class _ErrorState extends StatelessWidget {
           children: [
             const Icon(Icons.cloud_off, size: 56, color: Colors.grey),
             const SizedBox(height: 12),
-            Text('โหลดพยากรณ์อากาศไม่สำเร็จ\n$error',
-                textAlign: TextAlign.center),
+            Text(
+              'โหลดพยากรณ์อากาศไม่สำเร็จ\n$error',
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: onRetry, child: const Text('ลองใหม่')),
           ],

@@ -83,9 +83,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   width: i == _page ? 24 : 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: i == _page
-                        ? AppColors.primary
-                        : Colors.grey.shade300,
+                    color:
+                        i == _page ? AppColors.primary : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -150,14 +149,13 @@ class _OnboardingView extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 64,
-            backgroundColor: slide.color.withOpacity(0.12),
+            backgroundColor: slide.color.withValues(alpha: 0.12),
             child: Icon(slide.icon, size: 72, color: slide.color),
           ),
           const SizedBox(height: 32),
           Text(
             slide.title,
-            style:
-                const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),

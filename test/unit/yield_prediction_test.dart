@@ -15,8 +15,10 @@ void main() {
         farmSizeRai: 10,
       );
       // Expect within ±15% of the baseline at the optimum.
-      expect(pred.tonnesPerRai,
-          closeTo(YieldPredictionService.baselineTonnesPerRai, 0.11));
+      expect(
+        pred.tonnesPerRai,
+        closeTo(YieldPredictionService.baselineTonnesPerRai, 0.11),
+      );
       expect(pred.confidence, greaterThan(0.8));
     });
 

@@ -24,8 +24,8 @@ class BenchmarkQuestion {
         id: json['id'] as String,
         category: json['category'] as String,
         question: json['question'] as String,
-        expectedKeywords: ((json['expected_keywords'] as List?) ?? const [])
-            .cast<String>(),
+        expectedKeywords:
+            ((json['expected_keywords'] as List?) ?? const []).cast<String>(),
       );
 }
 
@@ -51,8 +51,7 @@ class BenchmarkResult {
     this.score,
   });
 
-  double get coverage =>
-      keywordTotal == 0 ? 0.0 : keywordHits / keywordTotal;
+  double get coverage => keywordTotal == 0 ? 0.0 : keywordHits / keywordTotal;
 
   /// Serialize to CSV — easy to paste into Excel / thesis tables.
   String toCsvRow() {
@@ -79,7 +78,6 @@ class BenchmarkRunner {
 
   final LlmGateway _gateway;
   final Logger _logger;
-
 
   /// Run [questions] across [providers] using [apiKeys]. Progress is
   /// streamed through [onProgress] (current, total).
@@ -109,26 +107,30 @@ class BenchmarkRunner {
             apiKeys: {provider: key},
           );
           final hits = _countKeywordHits(response.content, q.expectedKeywords);
-          results.add(BenchmarkResult(
-            questionId: q.id,
-            category: q.category,
-            provider: response.provider,
-            answer: response.content,
-            latencyMs: response.latencyMs,
-            keywordHits: hits,
-            keywordTotal: q.expectedKeywords.length,
-          ));
+          results.add(
+            BenchmarkResult(
+              questionId: q.id,
+              category: q.category,
+              provider: response.provider,
+              answer: response.content,
+              latencyMs: response.latencyMs,
+              keywordHits: hits,
+              keywordTotal: q.expectedKeywords.length,
+            ),
+          );
         } catch (e) {
           _logger.w('Benchmark ${q.id} / $provider failed', error: e);
-          results.add(BenchmarkResult(
-            questionId: q.id,
-            category: q.category,
-            provider: provider,
-            answer: 'ERROR: $e',
-            latencyMs: 0,
-            keywordHits: 0,
-            keywordTotal: q.expectedKeywords.length,
-          ));
+          results.add(
+            BenchmarkResult(
+              questionId: q.id,
+              category: q.category,
+              provider: provider,
+              answer: 'ERROR: $e',
+              latencyMs: 0,
+              keywordHits: 0,
+              keywordTotal: q.expectedKeywords.length,
+            ),
+          );
         }
         done++;
         onProgress?.call(done, total);
@@ -185,8 +187,7 @@ class ProviderSummary {
     required this.meanCoverage,
   });
 
-  factory ProviderSummary.from(
-      String provider, List<BenchmarkResult> rows) {
+  factory ProviderSummary.from(String provider, List<BenchmarkResult> rows) {
     if (rows.isEmpty) {
       return ProviderSummary(
         provider: provider,

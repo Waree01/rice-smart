@@ -4,7 +4,7 @@ import 'package:rice_smart/features/weather/data/thai_provinces.dart';
 void main() {
   group('ThaiProvince', () {
     test('can be instantiated with all fields', () {
-      final province = ThaiProvince(
+      const province = ThaiProvince(
         nameTh: 'สุโขทัย',
         nameEn: 'Sukhothai',
         latitude: 17.0063,

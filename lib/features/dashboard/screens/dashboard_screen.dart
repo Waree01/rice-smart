@@ -38,7 +38,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('${AppConstants.appName} · ${AppConstants.chatbotNameThai}'),
+        title: const Text(
+          '${AppConstants.appName} · ${AppConstants.chatbotNameThai}',
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
@@ -53,15 +55,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           Card(
-            color: AppColors.primaryLight.withOpacity(0.15),
+            color: AppColors.primaryLight.withValues(alpha: 0.15),
             child: const Padding(
               padding: EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   Text(
                     'สวัสดีครับ! ผมพัสดี',
-                    style: TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 4),
                   Text(
@@ -159,13 +160,19 @@ class _WeatherSummaryCard extends StatelessWidget {
                       Icon(Icons.location_off, color: Colors.grey, size: 36),
                       SizedBox(width: 12),
                       Expanded(
-                          child: Text(
-                              'ยังไม่ได้เลือกตำแหน่ง แตะเพื่อเลือกจังหวัด')),
+                        child: Text(
+                          'ยังไม่ได้เลือกตำแหน่ง แตะเพื่อเลือกจังหวัด',
+                        ),
+                      ),
                     ],
                   )
                 : Row(
                     children: [
-                      const Icon(Icons.wb_sunny, color: AppColors.info, size: 36),
+                      const Icon(
+                        Icons.wb_sunny,
+                        color: AppColors.info,
+                        size: 36,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -173,11 +180,14 @@ class _WeatherSummaryCard extends StatelessWidget {
                           children: [
                             Text(
                               f.provinceTh ?? 'สภาพอากาศ',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 2),
-                            Text(f.summary,
-                                style: TextStyle(color: Colors.grey[800])),
+                            Text(
+                              f.summary,
+                              style: TextStyle(color: Colors.grey[800]),
+                            ),
                           ],
                         ),
                       ),
@@ -193,8 +203,8 @@ class _WeatherSummaryCard extends StatelessWidget {
                 Icon(Icons.cloud_off, color: Colors.grey, size: 36),
                 SizedBox(width: 12),
                 Expanded(
-                    child: Text(
-                        'ไม่สามารถโหลดพยากรณ์อากาศได้ แตะเพื่อลองใหม่')),
+                  child: Text('ไม่สามารถโหลดพยากรณ์อากาศได้ แตะเพื่อลองใหม่'),
+                ),
               ],
             ),
           ),
@@ -234,8 +244,8 @@ class _FeatureCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 title,
-                style: const TextStyle(
-                    fontSize: 15, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),

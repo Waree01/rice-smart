@@ -56,9 +56,11 @@ class VoiceService {
     try {
       await _stt.listen(
         localeId: 'th_TH',
-        partialResults: true,
-        cancelOnError: true,
-        listenMode: ListenMode.dictation,
+        listenOptions: SpeechListenOptions(
+          partialResults: true,
+          cancelOnError: true,
+          listenMode: ListenMode.dictation,
+        ),
         onResult: (r) => onResult(r.recognizedWords, r.finalResult),
       );
       return true;

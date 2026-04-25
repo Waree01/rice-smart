@@ -23,10 +23,12 @@ enum EmbeddingBackend {
 class EmbeddingService {
   EmbeddingService({Dio? dio, Logger? logger})
       : _dio = dio ??
-            Dio(BaseOptions(
-              connectTimeout: const Duration(seconds: 20),
-              receiveTimeout: const Duration(seconds: 20),
-            )),
+            Dio(
+              BaseOptions(
+                connectTimeout: const Duration(seconds: 20),
+                receiveTimeout: const Duration(seconds: 20),
+              ),
+            ),
         _logger = logger ?? Logger();
 
   final Dio _dio;
@@ -61,8 +63,7 @@ class EmbeddingService {
   ///
   /// HF returns a nested `[1, seq_len, hidden_dim]` tensor. We mean-pool
   /// over the sequence dimension to get a single 768-dim vector.
-  Future<List<double>> _embedWangchanBerta(
-      String text, String apiKey) async {
+  Future<List<double>> _embedWangchanBerta(String text, String apiKey) async {
     final resp = await _dio.post<dynamic>(
       'https://api-inference.huggingface.co/pipeline/feature-extraction/'
       'airesearch/wangchanberta-base-att-spm-uncased',
@@ -70,10 +71,12 @@ class EmbeddingService {
         'inputs': text,
         'options': {'wait_for_model': true},
       },
-      options: Options(headers: {
-        'authorization': 'Bearer $apiKey',
-        'content-type': 'application/json',
-      }),
+      options: Options(
+        headers: {
+          'authorization': 'Bearer $apiKey',
+          'content-type': 'application/json',
+        },
+      ),
     );
     final raw = resp.data;
     if (raw is! List || raw.isEmpty) {
@@ -81,9 +84,10 @@ class EmbeddingService {
     }
     // Some HF deployments return [batch, seq, hidden]; others [seq, hidden].
     final first = raw.first;
-    final List<dynamic> seq = first is List && first.isNotEmpty && first.first is List
-        ? first.cast<dynamic>()
-        : raw.cast<dynamic>();
+    final List<dynamic> seq =
+        first is List && first.isNotEmpty && first.first is List
+            ? first.cast<dynamic>()
+            : raw.cast<dynamic>();
     if (seq.isEmpty || seq.first is! List) {
       throw const FormatException('Empty embedding sequence');
     }
@@ -109,10 +113,12 @@ class EmbeddingService {
         'input': text,
         'model': 'text-embedding-3-small',
       },
-      options: Options(headers: {
-        'authorization': 'Bearer $apiKey',
-        'content-type': 'application/json',
-      }),
+      options: Options(
+        headers: {
+          'authorization': 'Bearer $apiKey',
+          'content-type': 'application/json',
+        },
+      ),
     );
     final list = resp.data?['data'] as List?;
     final data = (list == null || list.isEmpty)

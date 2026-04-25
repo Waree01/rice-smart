@@ -20,10 +20,12 @@ import 'package:logger/logger.dart';
 class MultimodalVisionService {
   MultimodalVisionService({Dio? dio, Logger? logger})
       : _dio = dio ??
-            Dio(BaseOptions(
-              connectTimeout: const Duration(seconds: 30),
-              receiveTimeout: const Duration(seconds: 45),
-            )),
+            Dio(
+              BaseOptions(
+                connectTimeout: const Duration(seconds: 30),
+                receiveTimeout: const Duration(seconds: 45),
+              ),
+            ),
         _logger = logger ?? Logger();
 
   final Dio _dio;
@@ -125,17 +127,17 @@ class MultimodalVisionService {
           },
         ],
       },
-      options: Options(headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-      }),
+      options: Options(
+        headers: {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+        },
+      ),
     );
     final content = (resp.data?['content'] as List?) ?? const [];
     for (final block in content) {
-      if (block is Map &&
-          block['type'] == 'text' &&
-          block['text'] is String) {
+      if (block is Map && block['type'] == 'text' && block['text'] is String) {
         final text = block['text'] as String;
         if (text.isNotEmpty) {
           return CloudVisionResult(text: text, provider: 'claude');
@@ -181,8 +183,8 @@ class MultimodalVisionService {
     if (candidates.isEmpty) {
       throw const MultimodalException('Gemini ตอบกลับโดยไม่มี candidates');
     }
-    final parts = ((candidates.first as Map)['content'] as Map?)?['parts']
-        as List?;
+    final parts =
+        ((candidates.first as Map)['content'] as Map?)?['parts'] as List?;
     if (parts != null) {
       for (final p in parts) {
         if (p is Map && p['text'] is String) {

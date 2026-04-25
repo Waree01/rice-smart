@@ -51,13 +51,17 @@ class PestResultCard extends StatelessWidget {
                   if (result.isEmpty) ...[
                     const Row(
                       children: [
-                        Icon(Icons.check_circle_outline,
-                            color: AppColors.success),
+                        Icon(
+                          Icons.check_circle_outline,
+                          color: AppColors.success,
+                        ),
                         SizedBox(width: 8),
                         Text(
                           'ไม่พบศัตรูพืช',
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -76,8 +80,10 @@ class PestResultCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Row(
                           children: [
-                            const Icon(Icons.bug_report,
-                                color: AppColors.warning),
+                            const Icon(
+                              Icons.bug_report,
+                              color: AppColors.warning,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Column(
@@ -86,7 +92,8 @@ class PestResultCard extends StatelessWidget {
                                   Text(
                                     d.nameTh,
                                     style: const TextStyle(
-                                        fontWeight: FontWeight.w600),
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                   Text(
                                     d.nameEn,
@@ -105,8 +112,10 @@ class PestResultCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.tips_and_updates_outlined,
-                          color: AppColors.primary),
+                      const Icon(
+                        Icons.tips_and_updates_outlined,
+                        color: AppColors.primary,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(

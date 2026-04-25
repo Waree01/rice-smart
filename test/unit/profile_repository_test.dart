@@ -15,13 +15,15 @@ void main() {
 
     test('save + load round-trips', () async {
       final repo = ProfileRepository();
-      await repo.save(const FarmerProfile(
-        id: 'u1',
-        name: 'ลุงสมชาย',
-        provinceTh: 'สุโขทัย',
-        farmSizeRai: 15,
-        preferredLlm: 'typhoon',
-      ));
+      await repo.save(
+        const FarmerProfile(
+          id: 'u1',
+          name: 'ลุงสมชาย',
+          provinceTh: 'สุโขทัย',
+          farmSizeRai: 15,
+          preferredLlm: 'typhoon',
+        ),
+      );
       final loaded = await repo.load();
       expect(loaded, isNotNull);
       expect(loaded!.name, 'ลุงสมชาย');

@@ -16,10 +16,14 @@ void main() {
     test('severity colour matches the palette', () {
       expect(make(DiseaseSeverity.low).severityColor, AppColors.diseaseLow);
       expect(
-          make(DiseaseSeverity.medium).severityColor, AppColors.diseaseMedium);
+        make(DiseaseSeverity.medium).severityColor,
+        AppColors.diseaseMedium,
+      );
       expect(make(DiseaseSeverity.high).severityColor, AppColors.diseaseHigh);
-      expect(make(DiseaseSeverity.critical).severityColor,
-          AppColors.diseaseCritical);
+      expect(
+        make(DiseaseSeverity.critical).severityColor,
+        AppColors.diseaseCritical,
+      );
     });
 
     test('Thai severity label is populated for every band', () {

@@ -10,8 +10,7 @@ import '../services/pest_inference_service.dart';
 final pestInferenceServiceProvider =
     Provider<PestInferenceService>((ref) => PestInferenceService());
 
-class PestDetectionController
-    extends StateNotifier<AsyncValue<PestResult?>> {
+class PestDetectionController extends StateNotifier<AsyncValue<PestResult?>> {
   PestDetectionController(this._service, this._reports, this._ref)
       : super(const AsyncValue.data(null));
 
@@ -69,8 +68,9 @@ class PestDetectionController
   void reset() => state = const AsyncValue.data(null);
 }
 
-final pestDetectionControllerProvider = StateNotifierProvider<
-    PestDetectionController, AsyncValue<PestResult?>>((ref) {
+final pestDetectionControllerProvider =
+    StateNotifierProvider<PestDetectionController, AsyncValue<PestResult?>>(
+        (ref) {
   return PestDetectionController(
     ref.watch(pestInferenceServiceProvider),
     ref.watch(communityReportsServiceProvider),

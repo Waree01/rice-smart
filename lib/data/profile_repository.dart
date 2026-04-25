@@ -16,8 +16,7 @@ class ProfileRepository {
     final raw = prefs.getString(_key);
     if (raw == null || raw.isEmpty) return null;
     try {
-      return FarmerProfile.fromJson(
-          json.decode(raw) as Map<String, dynamic>);
+      return FarmerProfile.fromJson(json.decode(raw) as Map<String, dynamic>);
     } catch (_) {
       return null;
     }

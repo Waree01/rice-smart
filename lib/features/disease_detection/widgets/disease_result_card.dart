@@ -87,8 +87,10 @@ class DiseaseResultCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.tips_and_updates_outlined,
-                          color: AppColors.primary),
+                      const Icon(
+                        Icons.tips_and_updates_outlined,
+                        color: AppColors.primary,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -109,8 +111,7 @@ class DiseaseResultCard extends StatelessWidget {
               ),
             ),
           ),
-          if (result.imagePath != null &&
-              result.confidence < 0.75) ...[
+          if (result.imagePath != null && result.confidence < 0.75) ...[
             const SizedBox(height: 16),
             CloudSecondOpinion(imagePath: result.imagePath!),
           ],

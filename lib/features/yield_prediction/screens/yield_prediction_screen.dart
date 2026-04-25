@@ -16,8 +16,7 @@ class YieldPredictionScreen extends ConsumerStatefulWidget {
       _YieldPredictionScreenState();
 }
 
-class _YieldPredictionScreenState
-    extends ConsumerState<YieldPredictionScreen> {
+class _YieldPredictionScreenState extends ConsumerState<YieldPredictionScreen> {
   final _service = YieldPredictionService();
 
   double _daysSince = 60;
@@ -95,17 +94,19 @@ class _HeadlineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.secondaryLight.withOpacity(0.15),
+      color: AppColors.secondaryLight.withValues(alpha: 0.15),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(prediction.stageTh,
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                )),
+            Text(
+              prediction.stageTh,
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 6),
             Text(
               '${prediction.tonnesPerRai.toStringAsFixed(2)} ตัน/ไร่',
@@ -149,8 +150,10 @@ class _FactorsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('ปัจจัยที่ส่งผล',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'ปัจจัยที่ส่งผล',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             _factorBar('ความร้อนสะสม (GDD)', factors.gdd),
             _factorBar('ปลอดจากโรค', factors.disease),
@@ -204,8 +207,10 @@ class _ProjectionChart extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('แนวโน้มผลผลิตที่คาดการณ์ (6 สัปดาห์ข้างหน้า)',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'แนวโน้มผลผลิตที่คาดการณ์ (6 สัปดาห์ข้างหน้า)',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             SizedBox(
               height: 180,
@@ -219,9 +224,10 @@ class _ProjectionChart extends StatelessWidget {
                         showTitles: true,
                         reservedSize: 32,
                         interval: 0.4,
-                        getTitlesWidget: (v, _) =>
-                            Text(v.toStringAsFixed(1),
-                                style: const TextStyle(fontSize: 10)),
+                        getTitlesWidget: (v, _) => Text(
+                          v.toStringAsFixed(1),
+                          style: const TextStyle(fontSize: 10),
+                        ),
                       ),
                     ),
                     rightTitles: const AxisTitles(),
@@ -230,8 +236,10 @@ class _ProjectionChart extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         interval: 1,
-                        getTitlesWidget: (v, _) => Text('+${v.toInt()}w',
-                            style: const TextStyle(fontSize: 10)),
+                        getTitlesWidget: (v, _) => Text(
+                          '+${v.toInt()}w',
+                          style: const TextStyle(fontSize: 10),
+                        ),
                       ),
                     ),
                   ),
@@ -246,7 +254,7 @@ class _ProjectionChart extends StatelessWidget {
                       dotData: const FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                       ),
                     ),
                   ],
@@ -293,26 +301,64 @@ class _InputsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('ปรับข้อมูลแปลงนา',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            _slider('อายุหลังปักดำ (วัน)', daysSince, 0, 130,
-                (v) => v.toStringAsFixed(0), onDays),
-            _slider('GDD สะสม (°C·day)', cumulativeGdd, 0, 3500,
-                (v) => v.toStringAsFixed(0), onGdd),
-            _slider('ปริมาณฝนสะสม (มม.)', rainfallMm, 0, 3000,
-                (v) => v.toStringAsFixed(0), onRain),
-            _slider('จำนวนครั้งที่พบโรค', diseaseCount, 0, 12,
-                (v) => v.toStringAsFixed(0), onDisease),
-            _slider('จำนวนครั้งที่พบศัตรูพืช', pestCount, 0, 12,
-                (v) => v.toStringAsFixed(0), onPest),
+            const Text(
+              'ปรับข้อมูลแปลงนา',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            _slider(
+              'อายุหลังปักดำ (วัน)',
+              daysSince,
+              0,
+              130,
+              (v) => v.toStringAsFixed(0),
+              onDays,
+            ),
+            _slider(
+              'GDD สะสม (°C·day)',
+              cumulativeGdd,
+              0,
+              3500,
+              (v) => v.toStringAsFixed(0),
+              onGdd,
+            ),
+            _slider(
+              'ปริมาณฝนสะสม (มม.)',
+              rainfallMm,
+              0,
+              3000,
+              (v) => v.toStringAsFixed(0),
+              onRain,
+            ),
+            _slider(
+              'จำนวนครั้งที่พบโรค',
+              diseaseCount,
+              0,
+              12,
+              (v) => v.toStringAsFixed(0),
+              onDisease,
+            ),
+            _slider(
+              'จำนวนครั้งที่พบศัตรูพืช',
+              pestCount,
+              0,
+              12,
+              (v) => v.toStringAsFixed(0),
+              onPest,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _slider(String label, double value, double min, double max,
-      String Function(double) fmt, ValueChanged<double> onChanged) {
+  Widget _slider(
+    String label,
+    double value,
+    double min,
+    double max,
+    String Function(double) fmt,
+    ValueChanged<double> onChanged,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Column(

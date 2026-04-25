@@ -1,7 +1,14 @@
 import 'dart:math' as math;
 
 /// Stage in the rice-growth lifecycle expressed in days-after-seeding.
-enum GrowthStage { seedling, tillering, booting, heading, grainFilling, maturity }
+enum GrowthStage {
+  seedling,
+  tillering,
+  booting,
+  heading,
+  grainFilling,
+  maturity
+}
 
 /// Multiple linear-regression-style yield prediction.
 ///
@@ -117,14 +124,16 @@ class YieldPredictionService {
   }) {
     final out = <YieldPrediction>[];
     for (var w = 0; w <= weeksAhead; w++) {
-      out.add(predict(
-        cumulativeGdd: cumulativeGdd + weeklyGddGain * w,
-        daysSinceTransplant: daysSinceTransplant + 7 * w,
-        diseaseIncidents: diseaseIncidents,
-        pestIncidents: pestIncidents,
-        rainfallMm: rainfallMm + weeklyRainGain * w,
-        farmSizeRai: farmSizeRai,
-      ));
+      out.add(
+        predict(
+          cumulativeGdd: cumulativeGdd + weeklyGddGain * w,
+          daysSinceTransplant: daysSinceTransplant + 7 * w,
+          diseaseIncidents: diseaseIncidents,
+          pestIncidents: pestIncidents,
+          rainfallMm: rainfallMm + weeklyRainGain * w,
+          farmSizeRai: farmSizeRai,
+        ),
+      );
     }
     return out;
   }

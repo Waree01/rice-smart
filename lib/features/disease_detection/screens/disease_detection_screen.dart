@@ -54,9 +54,8 @@ class DiseaseDetectionScreen extends ConsumerWidget {
             IconButton(
               tooltip: 'เริ่มใหม่',
               icon: const Icon(Icons.refresh),
-              onPressed: () => ref
-                  .read(diseaseDetectionControllerProvider.notifier)
-                  .reset(),
+              onPressed: () =>
+                  ref.read(diseaseDetectionControllerProvider.notifier).reset(),
             ),
         ],
       ),
@@ -65,12 +64,12 @@ class DiseaseDetectionScreen extends ConsumerWidget {
           if (result == null) return const _EmptyState();
           return DiseaseResultCard(
             result: result,
-            onRetry: () => ref
-                .read(diseaseDetectionControllerProvider.notifier)
-                .reset(),
+            onRetry: () =>
+                ref.read(diseaseDetectionControllerProvider.notifier).reset(),
             onAskPasadee: () => context.push(
               '/chatbot',
-              extra: 'จากภาพที่ถ่าย AI วินิจฉัยว่าอาจเป็น "${result.diseaseName}" '
+              extra:
+                  'จากภาพที่ถ่าย AI วินิจฉัยว่าอาจเป็น "${result.diseaseName}" '
                   '(ความมั่นใจ ${(result.confidence * 100).toStringAsFixed(0)}%) '
                   'ช่วยแนะนำวิธีจัดการแบบละเอียดให้หน่อยครับ',
             ),
@@ -79,9 +78,8 @@ class DiseaseDetectionScreen extends ConsumerWidget {
         loading: () => const _AnalyzingView(),
         error: (err, _) => _ErrorState(
           message: err.toString(),
-          onRetry: () => ref
-              .read(diseaseDetectionControllerProvider.notifier)
-              .reset(),
+          onRetry: () =>
+              ref.read(diseaseDetectionControllerProvider.notifier).reset(),
         ),
       ),
       bottomNavigationBar: state.maybeWhen(

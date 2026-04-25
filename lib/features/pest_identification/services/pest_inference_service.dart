@@ -17,7 +17,8 @@ class PestInferenceService {
         'ไม่พบศัตรูพืชชัดเจน ลองถ่ายให้ใกล้ตัวแมลงมากขึ้นครับ';
     if (detections.isNotEmpty) {
       final top = detections.first;
-      final kbEntry = await KnowledgeBase.instance.pestById(_toKbId(top.nameEn));
+      final kbEntry =
+          await KnowledgeBase.instance.pestById(_toKbId(top.nameEn));
       recommendation = (kbEntry?['recommendation'] as String?) ??
           'พบ ${top.nameTh} ในแปลง ลองสำรวจรอบ ๆ กอเพิ่มเติมและจดบันทึกความเสียหายครับ';
     }
@@ -63,8 +64,12 @@ class PestInferenceService {
         nameEn: e.en,
         nameTh: e.th,
         confidence: confidence,
-        bbox: [left, top, left + 0.25 + rng.nextDouble() * 0.2,
-          top + 0.25 + rng.nextDouble() * 0.2],
+        bbox: [
+          left,
+          top,
+          left + 0.25 + rng.nextDouble() * 0.2,
+          top + 0.25 + rng.nextDouble() * 0.2,
+        ],
       );
     })
       ..sort((a, b) => b.confidence.compareTo(a.confidence));

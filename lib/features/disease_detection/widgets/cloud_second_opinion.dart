@@ -20,8 +20,7 @@ class CloudSecondOpinion extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<CloudSecondOpinion> createState() =>
-      _CloudSecondOpinionState();
+  ConsumerState<CloudSecondOpinion> createState() => _CloudSecondOpinionState();
 }
 
 class _CloudSecondOpinionState extends ConsumerState<CloudSecondOpinion> {
@@ -42,9 +41,8 @@ class _CloudSecondOpinionState extends ConsumerState<CloudSecondOpinion> {
       _error = null;
     });
     try {
-      final apiKey = _provider == 'claude'
-          ? Env.claudeApiKey
-          : Env.geminiApiKey;
+      final apiKey =
+          _provider == 'claude' ? Env.claudeApiKey : Env.geminiApiKey;
       final result = widget.isPest
           ? await _service.analyzePest(
               imagePath: widget.imagePath,
@@ -68,7 +66,7 @@ class _CloudSecondOpinionState extends ConsumerState<CloudSecondOpinion> {
   Widget build(BuildContext context) {
     if (_result != null) {
       return Card(
-        color: AppColors.info.withOpacity(0.06),
+        color: AppColors.info.withValues(alpha: 0.06),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(

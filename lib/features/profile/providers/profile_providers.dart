@@ -37,8 +37,8 @@ class ProfileController extends StateNotifier<FarmerProfile?> {
     String? language,
   }) async {
     const uuid = Uuid();
-    final existing = state ??
-        FarmerProfile(id: uuid.v4(), name: name ?? 'ชาวนา');
+    final existing =
+        state ?? FarmerProfile(id: uuid.v4(), name: name ?? 'ชาวนา');
     final updated = existing.copyWith(
       name: name,
       provinceTh: provinceTh,

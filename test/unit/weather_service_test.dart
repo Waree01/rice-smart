@@ -56,8 +56,7 @@ void main() {
     });
 
     test('respects custom base', () {
-      final gdd =
-          service.calculateGDD(maxTemp: 30, minTemp: 20, baseTemp: 15);
+      final gdd = service.calculateGDD(maxTemp: 30, minTemp: 20, baseTemp: 15);
       expect(gdd, 10.0);
     });
   });

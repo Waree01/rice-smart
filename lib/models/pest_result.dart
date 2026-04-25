@@ -37,8 +37,7 @@ class PestResult {
     this.imagePath,
   });
 
-  PestDetection? get primary =>
-      detections.isEmpty ? null : detections.first;
+  PestDetection? get primary => detections.isEmpty ? null : detections.first;
 
   bool get isEmpty => detections.isEmpty;
 }

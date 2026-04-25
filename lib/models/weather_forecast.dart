@@ -60,8 +60,10 @@ class WeatherForecast {
   });
 
   /// Max disease risk over the next 7 days — used for the header meter.
-  double get peakDiseaseRisk =>
-      daily.fold(0.0, (acc, d) => d.diseaseRiskScore > acc ? d.diseaseRiskScore : acc);
+  double get peakDiseaseRisk => daily.fold(
+        0.0,
+        (acc, d) => d.diseaseRiskScore > acc ? d.diseaseRiskScore : acc,
+      );
 
   /// Cumulative GDD — crude proxy for crop maturity.
   double get cumulativeGdd => daily.fold(0.0, (acc, d) => acc + d.gdd);

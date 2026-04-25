@@ -16,9 +16,11 @@ final llmGatewayProvider = Provider<LlmGateway>((ref) => LlmGateway());
 /// Embedding + RAG singletons.
 final embeddingServiceProvider =
     Provider<EmbeddingService>((ref) => EmbeddingService());
-final ragServiceProvider = Provider<RagService>((ref) => RagService(
-      embedder: ref.watch(embeddingServiceProvider),
-    ));
+final ragServiceProvider = Provider<RagService>(
+  (ref) => RagService(
+    embedder: ref.watch(embeddingServiceProvider),
+  ),
+);
 
 /// Whether Pasadee should speak replies aloud (TTS).
 final autoSpeakProvider = StateProvider<bool>((ref) => false);
@@ -36,8 +38,7 @@ final ragReadyProvider = StateProvider<bool>((ref) => false);
 
 /// Chat history + loading state.
 class ChatbotController extends StateNotifier<List<ChatMessage>> {
-  ChatbotController(this._gateway, this._rag, this._ref)
-      : super([_greeting()]);
+  ChatbotController(this._gateway, this._rag, this._ref) : super([_greeting()]);
 
   final LlmGateway _gateway;
   final RagService _rag;
@@ -80,12 +81,14 @@ class ChatbotController extends StateNotifier<List<ChatMessage>> {
       // History = state minus greeting, just-added user turn, and the
       // loading placeholder we're about to fill.
       final history = state
-          .where((m) =>
-              m.id != loadingMsg.id &&
-              m.id != userMsg.id &&
-              m.id != 'greeting' &&
-              !m.isLoading &&
-              !m.isError)
+          .where(
+            (m) =>
+                m.id != loadingMsg.id &&
+                m.id != userMsg.id &&
+                m.id != 'greeting' &&
+                !m.isLoading &&
+                !m.isError,
+          )
           .toList();
 
       final suffix = await _buildSystemPromptSuffix(trimmed, profile);
@@ -125,7 +128,9 @@ class ChatbotController extends StateNotifier<List<ChatMessage>> {
 
   /// Compose the per-turn system prompt suffix from profile + RAG hits.
   Future<String?> _buildSystemPromptSuffix(
-      String query, FarmerProfile? profile) async {
+    String query,
+    FarmerProfile? profile,
+  ) async {
     final parts = <String>[];
     if (profile != null) {
       final buf = StringBuffer('บริบทของชาวนา:');
@@ -141,8 +146,7 @@ class ChatbotController extends StateNotifier<List<ChatMessage>> {
 
     if (_rag.isIndexed) {
       final apiKey = _embeddingApiKey(_rag.activeBackend);
-      final suffix =
-          await _rag.buildPromptSuffix(query: query, apiKey: apiKey);
+      final suffix = await _rag.buildPromptSuffix(query: query, apiKey: apiKey);
       if (suffix != null) parts.add(suffix);
     }
 

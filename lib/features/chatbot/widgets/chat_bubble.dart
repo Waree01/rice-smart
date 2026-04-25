@@ -48,14 +48,16 @@ class ChatBubble extends StatelessWidget {
             if (message.isLoading)
               const _TypingIndicator()
             else if (isUser)
-              SelectableText(message.content,
-                  style: TextStyle(color: fg, height: 1.4))
+              SelectableText(
+                message.content,
+                style: TextStyle(color: fg, height: 1.4),
+              )
             else
               MarkdownBody(
                 data: message.content,
                 selectable: true,
-                styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
-                    .copyWith(
+                styleSheet:
+                    MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
                   p: TextStyle(color: fg, height: 1.4, fontSize: 15),
                 ),
               ),
@@ -115,9 +117,10 @@ class _TypingIndicatorState extends State<_TypingIndicator>
               padding: const EdgeInsets.symmetric(horizontal: 2),
               child: Opacity(
                 opacity: 0.3 + 0.7 * (1 - (t - 0.5).abs() * 2).clamp(0.0, 1.0),
-                child: const Text('•',
-                    style: TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  '•',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
             );
           }),

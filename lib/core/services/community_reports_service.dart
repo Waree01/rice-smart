@@ -79,8 +79,8 @@ class CommunityReportsService {
     final clusters = <OutbreakCluster>[];
     for (final entry in buckets.entries) {
       final parts = entry.key.split('|');
-      final items = entry.value..sort((a, b) =>
-          a.reportedAt.compareTo(b.reportedAt));
+      final items = entry.value
+        ..sort((a, b) => a.reportedAt.compareTo(b.reportedAt));
       final cluster = OutbreakCluster(
         geohashPrefix: parts[0],
         conditionId: parts[1],

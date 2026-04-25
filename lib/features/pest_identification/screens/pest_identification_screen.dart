@@ -49,9 +49,8 @@ class PestIdentificationScreen extends ConsumerWidget {
             IconButton(
               tooltip: 'เริ่มใหม่',
               icon: const Icon(Icons.refresh),
-              onPressed: () => ref
-                  .read(pestDetectionControllerProvider.notifier)
-                  .reset(),
+              onPressed: () =>
+                  ref.read(pestDetectionControllerProvider.notifier).reset(),
             ),
         ],
       ),
@@ -61,9 +60,8 @@ class PestIdentificationScreen extends ConsumerWidget {
           final primaryName = result.primary?.nameTh ?? 'แมลงที่พบ';
           return PestResultCard(
             result: result,
-            onRetry: () => ref
-                .read(pestDetectionControllerProvider.notifier)
-                .reset(),
+            onRetry: () =>
+                ref.read(pestDetectionControllerProvider.notifier).reset(),
             onAskPasadee: () => context.push(
               '/chatbot',
               extra: 'ระบบตรวจพบ "$primaryName" ในแปลงผม '
@@ -74,9 +72,8 @@ class PestIdentificationScreen extends ConsumerWidget {
         loading: () => const _AnalyzingView(),
         error: (err, _) => _ErrorState(
           message: err.toString(),
-          onRetry: () => ref
-              .read(pestDetectionControllerProvider.notifier)
-              .reset(),
+          onRetry: () =>
+              ref.read(pestDetectionControllerProvider.notifier).reset(),
         ),
       ),
       bottomNavigationBar: state.maybeWhen(

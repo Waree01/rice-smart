@@ -9,8 +9,10 @@ class AppConstants {
   static const String chatbotNameThai = 'พัสดี';
 
   // AI Model Files (TFLite)
-  static const String diseaseModelPath = 'assets/models/rice_disease_model.tflite';
-  static const String pestModelPath = 'assets/models/pest_detection_model.tflite';
+  static const String diseaseModelPath =
+      'assets/models/rice_disease_model.tflite';
+  static const String pestModelPath =
+      'assets/models/pest_detection_model.tflite';
   static const String diseaseLabelsPath = 'assets/models/disease_labels.txt';
   static const String pestLabelsPath = 'assets/models/pest_labels.txt';
 
@@ -20,7 +22,8 @@ class AppConstants {
 
   // API Endpoints
   static const String tmdBaseUrl = 'https://data.tmd.go.th/nwpapi/v1';
-  static const String nasaPowerUrl = 'https://power.larc.nasa.gov/api/temporal/daily/point';
+  static const String nasaPowerUrl =
+      'https://power.larc.nasa.gov/api/temporal/daily/point';
 
   // Storage Keys
   static const String themeKey = 'theme_mode';

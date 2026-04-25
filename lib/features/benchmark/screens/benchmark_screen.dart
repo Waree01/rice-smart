@@ -104,8 +104,10 @@ class _BenchmarkScreenState extends ConsumerState<BenchmarkScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('เลือก provider ที่จะวัด',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text(
+                    'เลือก provider ที่จะวัด',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   for (final p in LlmGateway.providers)
                     CheckboxListTile(
                       value: _selectedProviders.contains(p.id),
@@ -133,10 +135,8 @@ class _BenchmarkScreenState extends ConsumerState<BenchmarkScreen> {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: _running ||
-                          _selectedProviders.isEmpty
-                      ? null
-                      : _run,
+                  onPressed:
+                      _running || _selectedProviders.isEmpty ? null : _run,
                   icon: const Icon(Icons.play_arrow),
                   label: const Text('เริ่มเบนช์มาร์ก'),
                 ),
@@ -153,8 +153,10 @@ class _BenchmarkScreenState extends ConsumerState<BenchmarkScreen> {
             const SizedBox(height: 16),
             _SummaryTable(summary: _summary),
             const SizedBox(height: 16),
-            Text('รายละเอียดคำตอบ (${_results.length} แถว)',
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              'รายละเอียดคำตอบ (${_results.length} แถว)',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             for (final r in _results) _ResultTile(result: r),
           ],
@@ -176,8 +178,10 @@ class _SummaryTable extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            const Text('สรุปต่อ provider',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'สรุปต่อ provider',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             DataTable(
               columns: const [
@@ -189,14 +193,19 @@ class _SummaryTable extends StatelessWidget {
               ],
               rows: [
                 for (final s in rows)
-                  DataRow(cells: [
-                    DataCell(Text(s.provider)),
-                    DataCell(Text('${s.runs}')),
-                    DataCell(Text('${s.errorCount}')),
-                    DataCell(Text('${s.meanLatencyMs.toStringAsFixed(0)} ms')),
-                    DataCell(Text(
-                        '${(s.meanCoverage * 100).toStringAsFixed(0)}%')),
-                  ]),
+                  DataRow(
+                    cells: [
+                      DataCell(Text(s.provider)),
+                      DataCell(Text('${s.runs}')),
+                      DataCell(Text('${s.errorCount}')),
+                      DataCell(
+                        Text('${s.meanLatencyMs.toStringAsFixed(0)} ms'),
+                      ),
+                      DataCell(
+                        Text('${(s.meanCoverage * 100).toStringAsFixed(0)}%'),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ],

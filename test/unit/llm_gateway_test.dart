@@ -29,7 +29,7 @@ void main() {
     });
 
     test('Pasadee system prompt mentions the persona in Thai', () {
-      final p = LlmGateway.pasadeeSystemPrompt;
+      const p = LlmGateway.pasadeeSystemPrompt;
       expect(p, contains('พัสดี'));
       expect(p, contains('ชาวนา'));
       expect(p, contains('ครับ'));

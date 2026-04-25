@@ -3,23 +3,45 @@ import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../config/env.dart';
+import '../../../core/services/embedding_service.dart';
 import '../../../core/services/llm_gateway.dart';
+import '../../../core/services/rag_service.dart';
 import '../../../models/chat_message.dart';
+import '../../../models/farmer_profile.dart';
+import '../../profile/providers/profile_providers.dart';
 
 /// Shared singleton — wraps Dio + provider adapters.
 final llmGatewayProvider = Provider<LlmGateway>((ref) => LlmGateway());
+
+/// Embedding + RAG singletons.
+final embeddingServiceProvider =
+    Provider<EmbeddingService>((ref) => EmbeddingService());
+final ragServiceProvider = Provider<RagService>((ref) => RagService(
+      embedder: ref.watch(embeddingServiceProvider),
+    ));
+
+/// Whether Pasadee should speak replies aloud (TTS).
+final autoSpeakProvider = StateProvider<bool>((ref) => false);
 
 /// UI-selected LLM provider. Persisted separately by the settings
 /// controller; this provider is just the live state.
 final preferredLlmProvider = StateProvider<String>((ref) => 'typhoon');
 
+/// UI-selected embedding backend (for RAG thesis comparison).
+final embeddingBackendProvider =
+    StateProvider<EmbeddingBackend>((ref) => EmbeddingBackend.wangchanberta);
+
+/// True once the RAG index is built (one-time per app launch).
+final ragReadyProvider = StateProvider<bool>((ref) => false);
+
 /// Chat history + loading state.
 class ChatbotController extends StateNotifier<List<ChatMessage>> {
-  ChatbotController(this._gateway, this._preferredProviderRef)
+  ChatbotController(this._gateway, this._rag, this._ref)
       : super([_greeting()]);
 
   final LlmGateway _gateway;
-  final Ref _preferredProviderRef;
+  final RagService _rag;
+  final Ref _ref;
   final _logger = Logger();
   final _uuid = const Uuid();
 
@@ -53,10 +75,10 @@ class ChatbotController extends StateNotifier<List<ChatMessage>> {
     state = [...state, userMsg, loadingMsg];
 
     try {
-      final preferred = _preferredProviderRef.read(preferredLlmProvider);
-      // History = everything in state *except* the greeting, the just-added
-      // user turn (we pass it separately as userMessage), and the loading
-      // placeholder that will hold the reply.
+      final preferred = _ref.read(preferredLlmProvider);
+      final profile = _ref.read(profileControllerProvider);
+      // History = state minus greeting, just-added user turn, and the
+      // loading placeholder we're about to fill.
       final history = state
           .where((m) =>
               m.id != loadingMsg.id &&
@@ -65,11 +87,14 @@ class ChatbotController extends StateNotifier<List<ChatMessage>> {
               !m.isLoading &&
               !m.isError)
           .toList();
+
+      final suffix = await _buildSystemPromptSuffix(trimmed, profile);
       final response = await _gateway.sendMessage(
         userMessage: trimmed,
         preferredProvider: preferred,
         apiKeys: Env.providerKeys,
         history: history,
+        systemPromptSuffix: suffix,
       );
       state = [
         for (final m in state)
@@ -98,6 +123,42 @@ class ChatbotController extends StateNotifier<List<ChatMessage>> {
     }
   }
 
+  /// Compose the per-turn system prompt suffix from profile + RAG hits.
+  Future<String?> _buildSystemPromptSuffix(
+      String query, FarmerProfile? profile) async {
+    final parts = <String>[];
+    if (profile != null) {
+      final buf = StringBuffer('บริบทของชาวนา:');
+      buf.write(' ชื่อ "${profile.name}"');
+      if (profile.provinceTh != null && profile.provinceTh!.isNotEmpty) {
+        buf.write(' จังหวัด ${profile.provinceTh}');
+      }
+      if (profile.farmSizeRai != null) {
+        buf.write(' แปลงนา ${profile.farmSizeRai!.toStringAsFixed(1)} ไร่');
+      }
+      parts.add(buf.toString());
+    }
+
+    if (_rag.isIndexed) {
+      final apiKey = _embeddingApiKey(_rag.activeBackend);
+      final suffix =
+          await _rag.buildPromptSuffix(query: query, apiKey: apiKey);
+      if (suffix != null) parts.add(suffix);
+    }
+
+    if (parts.isEmpty) return null;
+    return parts.join('\n\n');
+  }
+
+  String _embeddingApiKey(EmbeddingBackend backend) {
+    switch (backend) {
+      case EmbeddingBackend.wangchanberta:
+        return Env.huggingFaceApiKey;
+      case EmbeddingBackend.openai:
+        return Env.openaiApiKey;
+    }
+  }
+
   String _friendlyError(Object e) {
     final raw = e.toString();
     if (raw.contains('ทุก LLM') || raw.contains('LlmGatewayException')) {
@@ -113,5 +174,9 @@ class ChatbotController extends StateNotifier<List<ChatMessage>> {
 
 final chatbotControllerProvider =
     StateNotifierProvider<ChatbotController, List<ChatMessage>>((ref) {
-  return ChatbotController(ref.watch(llmGatewayProvider), ref);
+  return ChatbotController(
+    ref.watch(llmGatewayProvider),
+    ref.watch(ragServiceProvider),
+    ref,
+  );
 });

@@ -103,15 +103,21 @@ class LlmGateway {
   /// providers whose API key is empty. Returns both the raw text reply
   /// and the provider that answered. Throws [LlmGatewayException] if
   /// every provider failed.
+  ///
+  /// [systemPromptSuffix] is appended to the core Pasadee persona — use
+  /// it to inject RAG context, user profile, or anything that changes
+  /// per-turn.
   Future<LlmResponse> sendMessage({
     required String userMessage,
     required String preferredProvider,
     required Map<String, String> apiKeys,
     List<ChatMessage> history = const [],
+    String? systemPromptSuffix,
   }) async {
     final order = getFallbackOrder(preferredProvider);
     Object? lastError;
     StackTrace? lastStack;
+    final systemPrompt = _composeSystemPrompt(systemPromptSuffix);
 
     for (final provider in order) {
       final apiKey = apiKeys[provider]?.trim();
@@ -127,11 +133,16 @@ class LlmGateway {
           apiKey: apiKey,
           userMessage: userMessage,
           history: history,
+          systemPrompt: systemPrompt,
         );
         stopwatch.stop();
         usage[provider]!.success++;
         usage[provider]!.lastLatencyMs = stopwatch.elapsedMilliseconds;
-        return LlmResponse(content: reply, provider: provider);
+        return LlmResponse(
+          content: reply,
+          provider: provider,
+          latencyMs: stopwatch.elapsedMilliseconds,
+        );
       } catch (e, s) {
         usage[provider]!.failure++;
         _logger.w('$provider failed; trying next', error: e);
@@ -147,21 +158,27 @@ class LlmGateway {
     );
   }
 
+  String _composeSystemPrompt(String? suffix) {
+    if (suffix == null || suffix.trim().isEmpty) return pasadeeSystemPrompt;
+    return '$pasadeeSystemPrompt\n\n$suffix';
+  }
+
   Future<String> _dispatch({
     required String provider,
     required String apiKey,
     required String userMessage,
     required List<ChatMessage> history,
+    required String systemPrompt,
   }) {
     switch (provider) {
       case 'claude':
-        return _callClaude(apiKey, userMessage, history);
+        return _callClaude(apiKey, userMessage, history, systemPrompt);
       case 'gpt':
-        return _callOpenAi(apiKey, userMessage, history);
+        return _callOpenAi(apiKey, userMessage, history, systemPrompt);
       case 'gemini':
-        return _callGemini(apiKey, userMessage, history);
+        return _callGemini(apiKey, userMessage, history, systemPrompt);
       case 'typhoon':
-        return _callTyphoon(apiKey, userMessage, history);
+        return _callTyphoon(apiKey, userMessage, history, systemPrompt);
       default:
         throw ArgumentError('Unknown LLM provider: $provider');
     }
@@ -177,6 +194,7 @@ class LlmGateway {
     String apiKey,
     String userMessage,
     List<ChatMessage> history,
+    String systemPrompt,
   ) async {
     final config = _providers['claude']!;
     final messages = <Map<String, String>>[
@@ -194,7 +212,7 @@ class LlmGateway {
       data: {
         'model': config.model,
         'max_tokens': 1024,
-        'system': pasadeeSystemPrompt,
+        'system': systemPrompt,
         'messages': messages,
       },
       options: Options(
@@ -220,10 +238,11 @@ class LlmGateway {
     String apiKey,
     String userMessage,
     List<ChatMessage> history,
+    String systemPrompt,
   ) async {
     final config = _providers['gpt']!;
     final messages = <Map<String, String>>[
-      {'role': 'system', 'content': pasadeeSystemPrompt},
+      {'role': 'system', 'content': systemPrompt},
       for (final m in history)
         if (m.role != ChatRole.system && !m.isError && !m.isLoading)
           {
@@ -262,6 +281,7 @@ class LlmGateway {
     String apiKey,
     String userMessage,
     List<ChatMessage> history,
+    String systemPrompt,
   ) async {
     final config = _providers['gemini']!;
     final contents = <Map<String, dynamic>>[
@@ -288,7 +308,7 @@ class LlmGateway {
         'contents': contents,
         'systemInstruction': {
           'parts': [
-            {'text': pasadeeSystemPrompt}
+            {'text': systemPrompt}
           ]
         },
         'generationConfig': {
@@ -321,10 +341,11 @@ class LlmGateway {
     String apiKey,
     String userMessage,
     List<ChatMessage> history,
+    String systemPrompt,
   ) async {
     final config = _providers['typhoon']!;
     final messages = <Map<String, String>>[
-      {'role': 'system', 'content': pasadeeSystemPrompt},
+      {'role': 'system', 'content': systemPrompt},
       for (final m in history)
         if (m.role != ChatRole.system && !m.isError && !m.isLoading)
           {
@@ -364,7 +385,12 @@ class LlmGateway {
 class LlmResponse {
   final String content;
   final String provider;
-  const LlmResponse({required this.content, required this.provider});
+  final int latencyMs;
+  const LlmResponse({
+    required this.content,
+    required this.provider,
+    this.latencyMs = 0,
+  });
 }
 
 /// Lightweight metadata about a provider for the settings UI.

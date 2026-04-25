@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/llm_gateway.dart';
+import '../../../core/services/voice_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../models/chat_message.dart';
 import '../providers/chatbot_providers.dart';
 import '../widgets/chat_bubble.dart';
 
@@ -12,7 +14,9 @@ import '../widgets/chat_bubble.dart';
 /// provider, streams (well, polls) the response, and renders markdown
 /// replies. Supports a pre-seeded prompt via `GoRouterState.extra` so
 /// the disease/pest detection screens can hand a diagnosis over to
-/// Pasadee for follow-up.
+/// Pasadee for follow-up. The mic button feeds Thai speech recognition
+/// directly into the input; toggling auto-speak makes Pasadee read
+/// replies aloud.
 class ChatbotScreen extends ConsumerStatefulWidget {
   /// Optional prompt to auto-send on first build (used when navigating
   /// from disease/pest screens).
@@ -26,7 +30,10 @@ class ChatbotScreen extends ConsumerStatefulWidget {
 class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   final TextEditingController _input = TextEditingController();
   final ScrollController _scroll = ScrollController();
+  final VoiceService _voice = VoiceService();
   bool _didSeed = false;
+  bool _listening = false;
+  String? _lastSpokenMessageId;
 
   @override
   void didChangeDependencies() {
@@ -43,6 +50,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   void dispose() {
     _input.dispose();
     _scroll.dispose();
+    _voice.stopSpeaking();
     super.dispose();
   }
 
@@ -51,6 +59,29 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     if (text.isEmpty) return;
     _input.clear();
     ref.read(chatbotControllerProvider.notifier).send(text);
+  }
+
+  Future<void> _toggleMic() async {
+    if (_listening) {
+      await _voice.stopListening();
+      setState(() => _listening = false);
+      return;
+    }
+    final ok = await _voice.startListening(
+      onResult: (text, isFinal) {
+        setState(() => _input.text = text);
+        if (isFinal) {
+          setState(() => _listening = false);
+        }
+      },
+    );
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('เปิดไมค์ไม่สำเร็จ — ตรวจสอบ permission')),
+      );
+    } else if (mounted) {
+      setState(() => _listening = true);
+    }
   }
 
   void _scrollToBottom() {
@@ -62,13 +93,28 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     );
   }
 
+  void _maybeSpeakLatest(List<ChatMessage> messages, bool autoSpeak) {
+    if (!autoSpeak || messages.isEmpty) return;
+    final last = messages.last;
+    if (last.role != ChatRole.assistant) return;
+    if (last.isLoading || last.isError) return;
+    if (last.id == _lastSpokenMessageId) return;
+    _lastSpokenMessageId = last.id;
+    _voice.speak(last.content);
+  }
+
   @override
   Widget build(BuildContext context) {
     final messages = ref.watch(chatbotControllerProvider);
     final preferred = ref.watch(preferredLlmProvider);
+    final autoSpeak = ref.watch(autoSpeakProvider);
+    final ragReady = ref.watch(ragReadyProvider);
 
-    ref.listen(chatbotControllerProvider, (_, __) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    ref.listen(chatbotControllerProvider, (_, next) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+        _maybeSpeakLatest(next, autoSpeak);
+      });
     });
 
     return Scaffold(
@@ -94,10 +140,28 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
               ],
             ),
             const Spacer(),
+            if (ragReady)
+              const Padding(
+                padding: EdgeInsets.only(right: 6),
+                child: Tooltip(
+                  message: 'RAG พร้อมใช้',
+                  child: Icon(Icons.auto_stories,
+                      size: 16, color: AppColors.primary),
+                ),
+              ),
             _ProviderPill(selected: preferred),
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: autoSpeak ? 'ปิดเสียงพัสดี' : 'ให้พัสดีพูด',
+            icon: Icon(autoSpeak ? Icons.volume_up : Icons.volume_off),
+            onPressed: () {
+              final next = !autoSpeak;
+              ref.read(autoSpeakProvider.notifier).state = next;
+              if (!next) _voice.stopSpeaking();
+            },
+          ),
           IconButton(
             tooltip: 'ล้างประวัติ',
             icon: const Icon(Icons.delete_sweep_outlined),
@@ -128,6 +192,8 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
             _InputBar(
               controller: _input,
               onSend: _handleSend,
+              onMic: _toggleMic,
+              listening: _listening,
             ),
           ],
         ),
@@ -213,12 +279,19 @@ class _ProviderPill extends StatelessWidget {
 class _InputBar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
-  const _InputBar({required this.controller, required this.onSend});
+  final VoidCallback onMic;
+  final bool listening;
+  const _InputBar({
+    required this.controller,
+    required this.onSend,
+    required this.onMic,
+    required this.listening,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 8, 12),
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 12),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         boxShadow: [
@@ -228,24 +301,33 @@ class _InputBar extends StatelessWidget {
       ),
       child: Row(
         children: [
+          IconButton(
+            tooltip: listening ? 'หยุดฟัง' : 'พูดคำถามของคุณ',
+            onPressed: onMic,
+            icon: Icon(
+              listening ? Icons.mic : Icons.mic_none,
+              color: listening ? AppColors.error : AppColors.primary,
+            ),
+          ),
           Expanded(
             child: TextField(
               controller: controller,
               minLines: 1,
               maxLines: 4,
               textInputAction: TextInputAction.send,
-              decoration: const InputDecoration(
-                hintText: 'ถามพัสดีได้เลยครับ...',
-                border: OutlineInputBorder(
+              decoration: InputDecoration(
+                hintText:
+                    listening ? 'กำลังฟัง...' : 'ถามพัสดีได้เลยครับ...',
+                border: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(24)),
                 ),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 10),
               ),
               onSubmitted: (_) => onSend(),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           CircleAvatar(
             backgroundColor: AppColors.primary,
             child: IconButton(

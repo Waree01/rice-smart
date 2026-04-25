@@ -1,0 +1,100 @@
+{
+  "_meta": {
+    "version": "0.1.0",
+    "description": "Thai agricultural Q&A benchmark for comparing LLMs in the RiceSmart thesis",
+    "language": "th",
+    "source": "Compiled from Thai Rice Department FAQ, farmer forum threads, and author-curated cases"
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "category": "disease",
+      "question": "ใบข้าวมีจุดน้ำตาลรูปกระสวยตรงกลางสีเทา ขอบสีน้ำตาลเข้ม เป็นอะไรครับ",
+      "expected_keywords": ["โรคไหม้", "blast", "propiconazole"]
+    },
+    {
+      "id": "q02",
+      "category": "disease",
+      "question": "ขอบใบข้าวเหลืองลามเข้ากลางใบ มีหยดน้ำเหลืองตอนเช้า",
+      "expected_keywords": ["ขอบใบแห้ง", "bacterial", "copper", "streptomycin"]
+    },
+    {
+      "id": "q03",
+      "category": "pest",
+      "question": "ต้นข้าวเหลืองเป็นหย่อม โคนกอมีแมลงสีน้ำตาลเยอะมาก",
+      "expected_keywords": ["เพลี้ยกระโดดสีน้ำตาล", "dinotefuran", "buprofezin"]
+    },
+    {
+      "id": "q04",
+      "category": "pest",
+      "question": "พบใบข้าวม้วนเป็นหลอด ภายในมีหนอนตัวเล็กๆ กินใบ",
+      "expected_keywords": ["หนอนห่อใบ", "leaffolder", "emamectin", "spinosad"]
+    },
+    {
+      "id": "q05",
+      "category": "fertilizer",
+      "question": "ระยะแตกกอควรใส่ปุ๋ยอะไร อัตราเท่าไหร่",
+      "expected_keywords": ["ยูเรีย", "46-0-0", "15", "20 กก.", "ไร่"]
+    },
+    {
+      "id": "q06",
+      "category": "water",
+      "question": "ฝนตกหนักติดต่อกัน 3 วัน น้ำในนาล้น ต้องทำยังไงดีครับ",
+      "expected_keywords": ["ระบายน้ำ", "คันนา", "ป้องกันโรค"]
+    },
+    {
+      "id": "q07",
+      "category": "seed",
+      "question": "ข้าวพันธุ์ไหนเหมาะกับภาคกลาง ปลูกได้ทั้งปี",
+      "expected_keywords": ["กข", "สุพรรณบุรี", "ปทุมธานี"]
+    },
+    {
+      "id": "q08",
+      "category": "weather",
+      "question": "อุณหภูมิกลางวันแตะ 38 องศาทั้งสัปดาห์ ข้าวระยะออกรวงจะเป็นยังไง",
+      "expected_keywords": ["เมล็ดลีบ", "heat stress", "พ่นน้ำ"]
+    },
+    {
+      "id": "q09",
+      "category": "cost",
+      "question": "จะลดต้นทุนปุ๋ยเคมีได้อย่างไร",
+      "expected_keywords": ["ตรวจดิน", "ปุ๋ยหมัก", "โดโลไมต์", "ไถกลบฟาง"]
+    },
+    {
+      "id": "q10",
+      "category": "harvest",
+      "question": "ข้าวสุกแก่แค่ไหนถึงเก็บเกี่ยวได้ดีที่สุด",
+      "expected_keywords": ["80", "85", "ระบายน้ำ", "ความชื้น"]
+    },
+    {
+      "id": "q11",
+      "category": "disease",
+      "question": "แผลสีเทาเขียวลักษณะงูเลื้อยบนกาบใบข้าว พบตอนกอแน่น",
+      "expected_keywords": ["กาบใบแห้ง", "sheath blight", "validamycin"]
+    },
+    {
+      "id": "q12",
+      "category": "pest",
+      "question": "ยอดข้าวเหี่ยว ดึงออกมาเห็นหนอนในลำต้น",
+      "expected_keywords": ["หนอนกอ", "stem borer", "Trichogramma", "chlorantraniliprole"]
+    },
+    {
+      "id": "q13",
+      "category": "weather",
+      "question": "ลมแรงกว่า 40 กม./ชม. จะส่งผลอะไรต่อนาข้าวบ้าง",
+      "expected_keywords": ["ลอดจิ้ง", "ล้ม", "lodging", "คันดิน"]
+    },
+    {
+      "id": "q14",
+      "category": "soil",
+      "question": "ดินนาเป็นกรดมาก pH 4.5 ต้องปรับยังไง",
+      "expected_keywords": ["โดโลไมต์", "ปูนขาว", "ปูนมาร์ล"]
+    },
+    {
+      "id": "q15",
+      "category": "pest",
+      "question": "หอยเชอรี่ระบาดในแปลงปักดำ ต้องจัดการยังไง",
+      "expected_keywords": ["เก็บไข่", "เป็ดไล่ทุ่ง", "niclosamide"]
+    }
+  ]
+}

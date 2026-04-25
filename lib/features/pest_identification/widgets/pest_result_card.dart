@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../models/pest_result.dart';
+import '../../disease_detection/widgets/cloud_second_opinion.dart';
 
 /// Result card shown after pest identification.
 class PestResultCard extends StatelessWidget {
@@ -119,6 +120,13 @@ class PestResultCard extends StatelessWidget {
               ),
             ),
           ),
+          if (result.imagePath != null) ...[
+            const SizedBox(height: 16),
+            CloudSecondOpinion(
+              imagePath: result.imagePath!,
+              isPest: true,
+            ),
+          ],
           const SizedBox(height: 16),
           Row(
             children: [

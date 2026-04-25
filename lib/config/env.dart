@@ -39,6 +39,7 @@ abstract class Env {
   static String get geminiApiKey => _get('GEMINI_API_KEY');
   static String get typhoonApiKey => _get('TYPHOON_API_KEY');
   static String get tmdApiKey => _get('TMD_API_KEY');
+  static String get huggingFaceApiKey => _get('HUGGINGFACE_API_KEY');
 
   /// True once `load()` has completed (or silently failed).
   static bool get isLoaded => _loaded;

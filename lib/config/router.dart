@@ -1,13 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/benchmark/screens/benchmark_screen.dart';
 import '../features/chatbot/screens/chatbot_screen.dart';
+import '../features/community/screens/community_screen.dart';
 import '../features/dashboard/screens/dashboard_screen.dart';
 import '../features/disease_detection/screens/disease_detection_screen.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
 import '../features/pest_identification/screens/pest_identification_screen.dart';
+import '../features/profile/screens/profile_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/weather/screens/weather_screen.dart';
+import '../features/yield_prediction/screens/yield_prediction_screen.dart';
 
 /// App router — the dashboard at `/` is the home screen and other
 /// features navigate via `context.push(...)`. A seed prompt can be
@@ -49,6 +53,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/weather',
         name: 'weather',
         builder: (context, state) => const WeatherScreen(),
+      ),
+      GoRoute(
+        path: '/yield',
+        name: 'yield',
+        builder: (context, state) => const YieldPredictionScreen(),
+      ),
+      GoRoute(
+        path: '/community',
+        name: 'community',
+        builder: (context, state) => const CommunityScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/benchmark',
+        name: 'benchmark',
+        builder: (context, state) => const BenchmarkScreen(),
       ),
       GoRoute(
         path: '/settings',

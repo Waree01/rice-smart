@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../models/disease_result.dart';
+import 'cloud_second_opinion.dart';
 
 /// Result card shown after a successful disease inference.
 class DiseaseResultCard extends StatelessWidget {
@@ -108,6 +109,11 @@ class DiseaseResultCard extends StatelessWidget {
               ),
             ),
           ),
+          if (result.imagePath != null &&
+              result.confidence < 0.75) ...[
+            const SizedBox(height: 16),
+            CloudSecondOpinion(imagePath: result.imagePath!),
+          ],
           const SizedBox(height: 16),
           Row(
             children: [

@@ -30,14 +30,15 @@ void main() {
 
     test('detectOutbreaks requires 3+ reports in same cell', () async {
       final service = CommunityReportsService();
+      // Same lat/lon so all three land in the same geohash-5 cell.
       for (var i = 0; i < 3; i++) {
         await service.submit(
           kind: ReportKind.disease,
           conditionId: 'rice_blast',
           conditionNameTh: 'โรคไหม้',
           confidence: 0.9,
-          lat: 17.006 + i * 0.001,
-          lon: 99.823 + i * 0.001,
+          lat: 17.006,
+          lon: 99.823,
           provinceTh: 'สุโขทัย',
         );
       }

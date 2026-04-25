@@ -38,6 +38,47 @@ For any non-trivial feature (>1 file changed):
 
 For a one-line bug fix, you may skip steps 1 and 7.
 
+## One-prompt orchestration mode (recommended)
+
+For any non-trivial work, use the architect as the **single entry point** — it
+will plan, delegate, run quality gates, iterate, and ship. You only need to
+type one prompt and merge the resulting PR.
+
+```
+@architect deliver issue #N
+```
+
+The architect runs this pipeline automatically:
+1. Loads the issue (`gh issue view`)
+2. Produces a plan (shown to you)
+3. Delegates to `@flutter-specialist` to implement on a new branch
+4. Runs `@code-reviewer` + `@security-auditor` + `@test-runner` in parallel
+5. Iterates fixes (max 3 cycles) if any gate fails
+6. Hands to `@pr-manager` to commit and open the PR
+7. Triggers `@docs-writer` to update CHANGELOG
+8. Returns a summary with the PR URL
+
+**Modes** — based on the verb you use:
+- "plan", "design", "evaluate" → architect just produces a plan, no delegation
+- "deliver", "implement", "ship", "go" → full orchestration
+
+**Hard limits** — architect WILL pause and ask you when:
+- The plan adds new top-level dependencies
+- Quality gates fail 3 times in a row
+- security-auditor flags CRITICAL with no obvious fix
+- A single PR would change >20 files
+- The issue requests work outside the 3 core features
+
+**Architect cannot:**
+- Merge PRs (you do that)
+- Push to main directly
+- Override CRITICAL security findings without your explicit OK
+
+## Manual mode (when you want fine control)
+
+For one-off questions, exploration, or single-step work, invoke specialists
+directly without going through architect:
+
 ## Parallel execution rules
 
 These can run in parallel (no dependencies):

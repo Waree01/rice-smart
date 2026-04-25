@@ -80,9 +80,9 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y lcov
           COVERAGE=$(lcov --summary coverage/lcov.info 2>&1 | grep "lines" | awk '{print $2}' | sed 's/%//')
           echo "Total coverage: ${COVERAGE}%"
-          # TODO: raise to 70% after adding tests for AI services (RAG, embedding, multimodal, voice)
-          # Currently ~17.5% due to thesis-grade feature expansion in commit 518b647
-          THRESHOLD=15
+          # AI services tests (RAG, embedding, benchmark, multimodal, voice) added
+          # Coverage threshold raised from 15% to 80% per CLAUDE.md spec
+          THRESHOLD=80
           if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
             echo "::error::Coverage ${COVERAGE}% below threshold ${THRESHOLD}%"
             exit 1

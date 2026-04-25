@@ -84,6 +84,10 @@ class MultimodalVisionService {
     if (apiKey.isEmpty) {
       throw const MultimodalException('ยังไม่ได้ตั้งค่า API key ของคลาวด์');
     }
+    // Validate provider BEFORE attempting file I/O
+    if (provider != 'claude' && provider != 'gemini') {
+      throw MultimodalException('Provider $provider ยังไม่รองรับ vision');
+    }
     final bytes = await File(imagePath).readAsBytes();
     final b64 = base64Encode(bytes);
     final mediaType = _guessMediaType(imagePath);
@@ -95,6 +99,7 @@ class MultimodalVisionService {
       case 'gemini':
         return _callGemini(apiKey, prompt, b64, mediaType);
       default:
+        // Unreachable due to earlier validation
         throw MultimodalException('Provider $provider ยังไม่รองรับ vision');
     }
   }

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Comprehensive unit tests for AI/ML services (RAG, embedding, benchmark, multimodal vision, voice)
+- Extended LLM gateway test coverage with 15+ new test cases
+- Artifact auto-cleanup workflow triggered on PR close
+
+### Changed
+
+- Raised CI test coverage threshold from 15% to 80%
+- Improved multimodal vision service: provider validation before file I/O
+
+
 ## [0.1.0] - 2026-04-25
 
 ### Added

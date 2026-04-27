@@ -43,7 +43,7 @@ dependencies:
   flutter_secure_storage: ^9.1.0
 
   # AI / ML - On-device Inference
-  tflite_flutter: ^0.10.4
+  tflite_flutter: ^0.12.1
   image: ^4.1.4
 
   # Camera & Image

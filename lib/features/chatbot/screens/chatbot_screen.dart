@@ -161,7 +161,9 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                   ),
                 ),
               ),
-            _ProviderPill(selected: preferred),
+            Flexible(
+              child: _ProviderPill(selected: preferred),
+            ),
           ],
         ),
         actions: [

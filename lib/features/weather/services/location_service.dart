@@ -45,7 +45,9 @@ class LocationService {
       _logger.i('Fetching current position');
 
       final position = await Geolocator.getCurrentPosition(
-        timeLimit: const Duration(seconds: 10),
+        locationSettings: const LocationSettings(
+          timeLimit: Duration(seconds: 10),
+        ),
       );
 
       _logger.i('Got position successfully');

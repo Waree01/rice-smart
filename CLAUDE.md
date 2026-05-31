@@ -12,87 +12,84 @@ Thai-native chatbot (Pasadee) backed by a multi-LLM gateway.
 **Scope is fixed at 3 features:** disease detection, pest identification, Pasadee
 chatbot. Anything else is Future Work and must NOT bloat this thesis project.
 
-## The agent team
+## How the team works now
 
-| Agent | Role | When to invoke |
+Priority: **speed + quality**, not cost. Strict division of labor by model:
+
+- **Opus 4.7 — the main session, only.** Talks to the user, asks questions,
+  plans, analyzes, decides what to delegate. Does NOT write production code,
+  run tests, edit docs, or do mechanical work. Opus is for thinking.
+- **Sonnet — the default for every subagent.** Coding, code review, security
+  audit, search, lookups, research, doc edits. Whenever the output quality
+  matters, this is the floor.
+- **Haiku — only for narrow, mechanical command-runner tasks** where there is
+  essentially no judgment and the output is a tool result, not analysis.
+  Examples: running a known test command, executing a git push, applying a
+  formatter. If you're not sure → use Sonnet.
+
+**Subagents are NEVER Opus.** If a task needs Opus-level reasoning to execute,
+the main session does it inline; it does not spawn an Opus subagent.
+
+Why this tilt: Haiku has drifted on read-only "Explore" prompts in this repo
+(returned empty replies pretending to have prior context). Sonnet does not.
+Quality first, cost second.
+
+There are no project-level agent files. The main session uses **built-in
+agents** (from the harness list) and passes an **explicit `model:` parameter**
+on every `Agent` call.
+
+## Task → subagent → model routing
+
+| Task | Subagent | Model |
 |---|---|---|
-| @architect | Plan & design | Start of every new feature, before coding |
-| @flutter-specialist | Implement | After architect's plan is accepted |
-| @code-reviewer | Quality review | After implementation, before commit |
-| @security-auditor | Security audit | Before every commit; mandatory before merge to main |
-| @test-runner | Tests & coverage | After implementation; before merge |
-| @pr-manager | Git/GitHub ops | When ready to ship |
-| @docs-writer | Documentation | After feature ships, or when docs drift |
+| Quick code search / "where is X" | `general-purpose` | sonnet |
+| General Q&A or one-off lookup | `general-purpose` | sonnet |
+| Multi-step research / synthesis across files | `general-purpose` | sonnet |
+| Flutter feature implementation | `flutter-specialist` | sonnet |
+| Dart/Flutter build or analyzer fix | `dart-build-resolver` | sonnet |
+| Code review (Flutter/Dart) | `flutter-reviewer` | sonnet |
+| Generic code review | `code-reviewer` | sonnet |
+| Security audit (Semgrep/Trivy/TruffleHog) | `security-auditor` | sonnet |
+| README / CHANGELOG / ADR edits | `docs-writer` | sonnet |
+| Run a fixed test command, report pass/fail | `test-runner` | haiku |
+| Routine git commit / push / open PR | `pr-manager` | haiku |
+| Hard architecture / design analysis | **main session (Opus)** — no subagent | — |
+| Decide between two approaches / requirement tradeoffs | **main session (Opus)** — no subagent | — |
 
-## Mandatory workflow
+**Rules of thumb the main session follows:**
+- Pass `model:` on every `Agent` call. Never rely on inheritance.
+- Default subagent = **Sonnet**. Drop to Haiku only if the task is a pure command runner.
+- Never spawn an Opus subagent. Planning / analysis stays in the main session.
+- Independent subagents run **in parallel** — multiple `Agent` calls in one message.
+- Prefer one well-scoped Sonnet subagent over a long chain of Haiku ones.
 
-For any non-trivial feature (>1 file changed):
+## Mandatory workflow for non-trivial features
 
-1. `@architect` produces a plan from the GitHub issue
-2. `@flutter-specialist` implements per the plan
-3. `@code-reviewer` reviews the diff
-4. `@test-runner` validates tests pass and coverage targets met
-5. `@security-auditor` scans (REQUIRED if touching auth, crypto, storage, network, or LLM keys)
-6. `@pr-manager` opens the PR
-7. `@docs-writer` updates README/CHANGELOG (after merge)
+For any feature touching more than one file:
 
-For a one-line bug fix, you may skip steps 1 and 7.
+1. **Plan (Opus, main session)** — read the issue / spec, decompose into tasks. No subagent here.
+2. **Implement** — delegate to `flutter-specialist` (sonnet).
+3. **Quality gates in parallel** — `flutter-reviewer` (sonnet) + `security-auditor` (sonnet) + `test-runner` (haiku) in one message.
+4. **Iterate (Opus)** — read findings, decide fixes, delegate again. Max 3 cycles before asking the user.
+5. **Ship** — `pr-manager` (haiku) opens the PR.
+6. **Docs** — `docs-writer` (haiku) updates README/CHANGELOG after merge.
 
-## One-prompt orchestration mode (recommended)
+For a one-line bug fix: main session plans → spawns one `flutter-specialist` (sonnet) → `test-runner` (haiku) → `pr-manager` (haiku).
 
-For any non-trivial work, use the architect as the **single entry point** — it
-will plan, delegate, run quality gates, iterate, and ship. You only need to
-type one prompt and merge the resulting PR.
+## Hard limits (main session pauses and asks the user)
 
-```
-@architect deliver issue #N
-```
-
-The architect runs this pipeline automatically:
-1. Loads the issue (`gh issue view`)
-2. Produces a plan (shown to you)
-3. Delegates to `@flutter-specialist` to implement on a new branch
-4. Runs `@code-reviewer` + `@security-auditor` + `@test-runner` in parallel
-5. Iterates fixes (max 3 cycles) if any gate fails
-6. Hands to `@pr-manager` to commit and open the PR
-7. Triggers `@docs-writer` to update CHANGELOG
-8. Returns a summary with the PR URL
-
-**Modes** — based on the verb you use:
-- "plan", "design", "evaluate" → architect just produces a plan, no delegation
-- "deliver", "implement", "ship", "go" → full orchestration
-
-**Hard limits** — architect WILL pause and ask you when:
-- The plan adds new top-level dependencies
+- Adding a new top-level dependency
 - Quality gates fail 3 times in a row
-- security-auditor flags CRITICAL with no obvious fix
+- `security-auditor` flags CRITICAL with no obvious fix
 - A single PR would change >20 files
-- The issue requests work outside the 3 core features
+- Request is outside the 3 core features
+- About to spawn any subagent on Opus (this should never happen — pause and rethink)
 
-**Architect cannot:**
-- Merge PRs (you do that)
-- Push to main directly
-- Override CRITICAL security findings without your explicit OK
+## Main session boundaries
 
-## Manual mode (when you want fine control)
-
-For one-off questions, exploration, or single-step work, invoke specialists
-directly without going through architect:
-
-## Parallel execution rules
-
-These can run in parallel (no dependencies):
-- code-reviewer + security-auditor + test-runner
-
-These must run sequentially:
-- architect → flutter-specialist (plan before code)
-- flutter-specialist → code-reviewer (code before review)
-- everything → pr-manager (review/test/audit before PR)
-
-To trigger parallel review:
-```
-@code-reviewer @security-auditor @test-runner — review changes in lib/features/chatbot/
-```
+- Cannot merge PRs (user does)
+- Cannot push to `main` directly
+- Cannot override CRITICAL security findings without explicit user OK
 
 ## Hard rules (never violate)
 
@@ -122,14 +119,18 @@ To trigger parallel review:
 - New code requires at least one test
 - Coverage targets: ML inference 90%, repos 80%, UI 60%
 
-## Cost discipline
+## Model discipline (quality + speed first)
 
-Default subagent model is `haiku` (set via `CLAUDE_CODE_SUBAGENT_MODEL` env).
-Per-agent overrides:
-- `@architect` and `@security-auditor` use `opus` (deep reasoning required)
-- Everyone else uses `sonnet` or `haiku`
-
-Don't use `opus` for routine work — it's 5× the cost of haiku.
+- Default subagent model is **Sonnet**, enforced via `CLAUDE_CODE_SUBAGENT_MODEL`
+  in `.claude/settings.local.json` — safety net so silent inheritance can't
+  fall back to Opus.
+- Every `Agent` call passes an **explicit** `model:` (`"sonnet"` or `"haiku"`).
+- **No subagent ever uses Opus.** Hard tasks stay in the main session.
+- Haiku is reserved for narrow command-runner tasks (`test-runner`,
+  `pr-manager`). If you'd hesitate to use Haiku, use Sonnet.
+- Cost is a side concern, not a constraint. Quality of the deliverable and
+  speed-to-result come first. Opus stays on the conversation so Sonnet can
+  focus on the typing without losing fidelity.
 
 ## Branch and commit conventions
 
@@ -148,7 +149,8 @@ Don't use `opus` for routine work — it's 5× the cost of haiku.
 - Push back if a request would expand scope beyond 3 features
 - Ask for clarification rather than guessing on security-sensitive changes
 - Prefer "no" over "maybe" for destructive operations
-- Defer to the architect on design decisions; defer to the security-auditor on safety calls
+- Hard design / requirement tradeoffs: main session (Opus) handles inline — never spawn an opus subagent
+- Safety calls: spawn `security-auditor` (sonnet)
 
 ## Local commands the team relies on
 

@@ -185,6 +185,15 @@ manual delete (the sandbox couldn't remove them):
 
 Run locally: `rm -rf '{lib' flutter_01.log && git add -A && git commit -m 'chore: remove scaffold leftovers'`
 
+## Acknowledgements
+
+### Disease detection model
+The rice disease classifier is trained on the **Rice Diseases Image Dataset** by Hasan et al., 2019:
+
+> Hasan, Md. Jahid et al. (2019), "Rice Disease Image Dataset", Mendeley Data, V1.
+> https://doi.org/10.17632/fwcj7stb8r.1
+> Licensed under CC BY 4.0.
+
 ## Contributing
 
 This is a graduation project; contributions welcome after the thesis

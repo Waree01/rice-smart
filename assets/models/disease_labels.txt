@@ -1,0 +1,5 @@
+rice_blast
+brown_spot
+bacterial_leaf_blight
+sheath_blight
+healthy

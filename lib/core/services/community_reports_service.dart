@@ -96,6 +96,54 @@ class CommunityReportsService {
     return clusters;
   }
 
+  /// Seed a demo outbreak cluster (rice blast around Pathum Thani) so
+  /// the admin map + outbreak screens have data to render in a thesis
+  /// demo. No-op if any report already exists.
+  Future<void> seedDemoIfEmpty() async {
+    final existing = await _loadAll();
+    if (existing.isNotEmpty) return;
+
+    // คลองหลวง ปทุมธานี — points jitter inside one ~5 km cell so they
+    // cluster into a single hot OutbreakCluster.
+    const baseLat = 14.07;
+    const baseLon = 100.62;
+    final now = DateTime.now();
+    final reports = <CommunityReport>[];
+    for (var i = 0; i < 14; i++) {
+      final lat = baseLat + ((i % 5) - 2) * 0.006;
+      final lon = baseLon + ((i % 4) - 2) * 0.006;
+      reports.add(
+        CommunityReport(
+          id: _uuid.v4(),
+          kind: ReportKind.disease,
+          conditionId: 'rice_blast',
+          conditionNameTh: 'โรคไหม้ข้าว',
+          confidence: 0.86 + (i % 5) * 0.02,
+          geohash5: _geo.encode(lon, lat, precision: 5),
+          provinceTh: 'ปทุมธานี',
+          reportedAt: now.subtract(Duration(days: i % 7, hours: i)),
+        ),
+      );
+    }
+    // A smaller, watch-level pest cluster nearby.
+    for (var i = 0; i < 2; i++) {
+      reports.add(
+        CommunityReport(
+          id: _uuid.v4(),
+          kind: ReportKind.pest,
+          conditionId: 'brown_planthopper',
+          conditionNameTh: 'เพลี้ยกระโดดสีน้ำตาล',
+          confidence: 0.80,
+          geohash5: _geo.encode(baseLon + 0.05, baseLat + 0.05, precision: 5),
+          provinceTh: 'ปทุมธานี',
+          reportedAt: now.subtract(Duration(days: i + 1)),
+        ),
+      );
+    }
+    await _saveAll(reports);
+    _logger.i('Seeded ${reports.length} demo community reports');
+  }
+
   /// Clear all community reports stored on this device.
   Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();

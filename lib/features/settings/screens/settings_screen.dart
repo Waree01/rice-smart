@@ -9,6 +9,7 @@ import '../../../core/services/embedding_service.dart';
 import '../../../core/services/llm_gateway.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../chatbot/providers/chatbot_providers.dart';
+import '../../profile/providers/profile_providers.dart';
 
 /// Settings screen — LLM preference, RAG backend, profile link, about.
 class SettingsScreen extends ConsumerWidget {
@@ -19,6 +20,8 @@ class SettingsScreen extends ConsumerWidget {
     final preferred = ref.watch(preferredLlmProvider);
     final embedding = ref.watch(embeddingBackendProvider);
     final ragReady = ref.watch(ragReadyProvider);
+    final profile = ref.watch(profileControllerProvider);
+    final isAdmin = profile?.isAdmin ?? false;
 
     return Scaffold(
       appBar: AppBar(
@@ -36,6 +39,41 @@ class SettingsScreen extends ConsumerWidget {
                 const Text('ชื่อ จังหวัด ขนาดแปลง — ใช้ปรับบริบทของพัสดี'),
             onTap: () => context.push('/profile'),
           ),
+          const Divider(),
+          const _SectionHeader(title: 'เจ้าหน้าที่ / แอดมิน'),
+          if (!isAdmin)
+            ListTile(
+              leading: const Icon(
+                Icons.admin_panel_settings_outlined,
+                color: AppColors.adminPrimary,
+              ),
+              title: const Text('เข้าสู่ระบบแอดมิน'),
+              subtitle:
+                  const Text('ต้องใช้รหัสแอดมินเพื่อเปิดสิทธิ์ควบคุมคุณภาพ'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/admin/login'),
+            ),
+          if (isAdmin) ...[
+            ListTile(
+              leading: const Icon(
+                Icons.dashboard_customize_outlined,
+                color: AppColors.adminPrimary,
+              ),
+              title: const Text('เปิดแดชบอร์ดแอดมิน'),
+              subtitle:
+                  const Text('คิวตรวจสอบ · ติดป้าย · แผนที่ระบาด · ผู้ใช้'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/admin'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout_outlined, color: Colors.red),
+              title: const Text('ออกจากโหมดแอดมิน'),
+              subtitle: const Text('กลับไปเป็นผู้ใช้ทั่วไป'),
+              onTap: () => ref
+                  .read(profileControllerProvider.notifier)
+                  .update(role: 'user'),
+            ),
+          ],
           const Divider(),
           const _SectionHeader(title: 'ผู้ช่วยของพัสดี (LLM)'),
           for (final p in LlmGateway.providers)
@@ -134,9 +172,47 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
           const _SectionHeader(title: 'ข้อมูลผู้ใช้'),
           ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text('ออกจากระบบ / กลับหน้าสมัคร'),
+            subtitle:
+                const Text('ล้างโปรไฟล์และ onboarding แล้วไปหน้าสมัครทันที'),
+            onTap: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('ออกจากระบบ?'),
+                  content: const Text(
+                    'จะล้างชื่อผู้ใช้และข้อมูลโปรไฟล์ในเครื่อง '
+                    'แล้วกลับไปหน้าสมัครสมาชิก',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: const Text('ยกเลิก'),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: const Text('ออกจากระบบ'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed != true) return;
+              await ref.read(profileControllerProvider.notifier).clear();
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove(AppConstants.onboardingKey);
+              if (!context.mounted) return;
+              context.go('/onboarding');
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.restart_alt, color: Colors.red),
-            title: const Text('ล้างการตั้งค่าและ onboarding'),
-            subtitle: const Text('แอปจะแสดง onboarding อีกครั้งในครั้งถัดไป'),
+            title: const Text('ล้างเฉพาะ onboarding'),
+            subtitle: const Text('แอปจะแสดงหน้าสมัครอีกครั้งในการเปิดถัดไป'),
             onTap: () async {
               final prefs = await SharedPreferences.getInstance();
               await prefs.remove(AppConstants.onboardingKey);

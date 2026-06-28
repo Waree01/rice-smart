@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/community_reports_service.dart';
 import '../../../models/community_report.dart';
 import '../../../models/pest_result.dart';
+import '../../admin/providers/admin_providers.dart';
 import '../../community/providers/community_providers.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../services/pest_inference_service.dart';
@@ -24,9 +25,23 @@ class PestDetectionController extends StateNotifier<AsyncValue<PestResult?>> {
       final result = await _service.detect(imagePath: imagePath);
       state = AsyncValue.data(result);
       await _maybeReportToCommunity(result);
+      await _maybeQueueForReview(result, imagePath);
     } catch (e, s) {
       state = AsyncValue.error(e, s);
     }
+  }
+
+  /// Queue low-confidence (< 75%) pest detections for human review.
+  Future<void> _maybeQueueForReview(PestResult result, String imagePath) async {
+    final primary = result.primary;
+    if (primary == null || primary.confidence >= 0.75) return;
+    await _ref.read(reviewQueueServiceProvider).enqueue(
+          kind: ReportKind.pest,
+          aiGuessId: _conditionIdFor(primary.nameEn),
+          aiGuessTh: primary.nameTh,
+          confidence: primary.confidence,
+          imagePath: imagePath,
+        );
   }
 
   Future<void> _maybeReportToCommunity(PestResult result) async {

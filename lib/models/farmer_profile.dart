@@ -15,6 +15,10 @@ class FarmerProfile {
   /// UI language ('th' / 'en').
   final String language;
 
+  /// Access role: `'user'` (farmer, default) or `'admin'` (เจ้าหน้าที่
+  /// ควบคุมคุณภาพ + ติดป้ายข้อมูล). Gates the admin-side screens.
+  final String role;
+
   const FarmerProfile({
     required this.id,
     required this.name,
@@ -24,7 +28,10 @@ class FarmerProfile {
     this.farmSizeRai,
     this.preferredLlm = 'typhoon',
     this.language = 'th',
+    this.role = 'user',
   });
+
+  bool get isAdmin => role == 'admin';
 
   FarmerProfile copyWith({
     String? name,
@@ -34,6 +41,7 @@ class FarmerProfile {
     double? farmSizeRai,
     String? preferredLlm,
     String? language,
+    String? role,
   }) {
     return FarmerProfile(
       id: id,
@@ -44,6 +52,7 @@ class FarmerProfile {
       farmSizeRai: farmSizeRai ?? this.farmSizeRai,
       preferredLlm: preferredLlm ?? this.preferredLlm,
       language: language ?? this.language,
+      role: role ?? this.role,
     );
   }
 
@@ -56,6 +65,7 @@ class FarmerProfile {
         'farmSizeRai': farmSizeRai,
         'preferredLlm': preferredLlm,
         'language': language,
+        'role': role,
       };
 
   factory FarmerProfile.fromJson(Map<String, dynamic> json) => FarmerProfile(
@@ -67,5 +77,6 @@ class FarmerProfile {
         farmSizeRai: (json['farmSizeRai'] as num?)?.toDouble(),
         preferredLlm: json['preferredLlm'] as String? ?? 'typhoon',
         language: json['language'] as String? ?? 'th',
+        role: json['role'] as String? ?? 'user',
       );
 }

@@ -29,4 +29,10 @@ class AppColors {
   // Background
   static const Color background = Color(0xFFF5F5F0);
   static const Color surface = Color(0xFFFFFFFF);
+
+  // Admin side (ควบคุมคุณภาพ + ติดป้ายข้อมูล)
+  static const Color adminPrimary = Color(0xFF0F5C2E);
+  static const Color adminAmber = Color(0xFFBA7517); // pending / watch
+  static const Color adminTeal = Color(0xFF0F6E56); // model accuracy
+  static const Color adminBlue = Color(0xFF0C447C); // users
 }

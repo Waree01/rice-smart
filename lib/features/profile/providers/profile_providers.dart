@@ -35,6 +35,7 @@ class ProfileController extends StateNotifier<FarmerProfile?> {
     double? farmSizeRai,
     String? preferredLlm,
     String? language,
+    String? role,
   }) async {
     const uuid = Uuid();
     final existing =
@@ -47,6 +48,7 @@ class ProfileController extends StateNotifier<FarmerProfile?> {
       farmSizeRai: farmSizeRai,
       preferredLlm: preferredLlm,
       language: language,
+      role: role,
     );
     await save(updated);
   }

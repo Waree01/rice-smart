@@ -1,0 +1,18 @@
+# RiceSmart disease model — training dependencies.
+# Install with:  pip install -r ml/disease_model/requirements.txt
+#
+# TensorFlow is pinned to 2.15 (Keras 2). Do NOT bump to >=2.16 — those
+# versions default to Keras 3, which breaks train.py (model.fit callbacks,
+# the .keras checkpoint format, and the TFLite INT8 converter API all change).
+tensorflow==2.15.0
+
+# Image loading / preprocessing
+numpy<2.0
+Pillow>=10.0.0
+
+# Evaluation metrics (classification_report, confusion_matrix)
+scikit-learn>=1.3.0
+
+# Only needed for the HuggingFace fallback path (USE_LOCAL_DATA=false).
+# Harmless to install even when using the default local Mendeley dataset.
+datasets>=2.14.0

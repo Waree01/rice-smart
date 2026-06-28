@@ -30,6 +30,10 @@ class AppConstants {
   static const String localeKey = 'locale';
   static const String onboardingKey = 'onboarding_complete';
 
+  // Admin access — รหัสสำหรับเข้าสู่ระบบแอดมิน (เดโม; ภายหลังย้ายไป backend/Firebase
+  // Custom Claims ได้). เปลี่ยนค่านี้เพื่อกำหนดรหัสแอดมินของระบบ.
+  static const String adminAccessCode = 'admin2026';
+
   // Supported LLM Providers
   static const List<String> llmProviders = [
     'claude',

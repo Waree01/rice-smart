@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/community_reports_service.dart';
 import '../../../models/community_report.dart';
 import '../../../models/disease_result.dart';
+import '../../admin/providers/admin_providers.dart';
 import '../../community/providers/community_providers.dart';
 import '../../profile/providers/profile_providers.dart';
 import '../services/disease_inference_service.dart';
@@ -29,9 +30,23 @@ class DiseaseDetectionController
       final result = await _service.classify(imagePath: imagePath);
       state = AsyncValue.data(result);
       await _maybeReportToCommunity(result);
+      await _maybeQueueForReview(result);
     } catch (e, s) {
       state = AsyncValue.error(e, s);
     }
+  }
+
+  /// Send detections the model was *unsure* about (< 75%) to the admin
+  /// review queue, where they fuel the active-learning labelling loop.
+  Future<void> _maybeQueueForReview(DiseaseResult result) async {
+    if (result.confidence >= 0.75) return;
+    await _ref.read(reviewQueueServiceProvider).enqueue(
+          kind: ReportKind.disease,
+          aiGuessId: _conditionIdFor(result),
+          aiGuessTh: result.diseaseName,
+          confidence: result.confidence,
+          imagePath: result.imagePath,
+        );
   }
 
   /// Auto-share detections ≥ 75% confidence to the community feed so

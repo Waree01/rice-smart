@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:rice_smart/app.dart';
 import 'package:rice_smart/core/constants/app_constants.dart';
-import 'package:rice_smart/features/onboarding/screens/onboarding_screen.dart';
+import 'package:rice_smart/features/onboarding/screens/signup_screen.dart';
 
 void main() {
   setUp(() {
@@ -34,22 +34,23 @@ void main() {
     await tester.pump(const Duration(milliseconds: 50));
 
     expect(find.textContaining('พัสดี'), findsWidgets);
-    expect(find.text('วินิจฉัยโรคข้าว'), findsOneWidget);
-    expect(find.text('ระบุศัตรูพืช'), findsOneWidget);
-    expect(find.text('คุยกับพัสดี'), findsOneWidget);
-    expect(find.text('พยากรณ์อากาศ'), findsOneWidget);
+    expect(find.text('ถามโรคข้าว'), findsOneWidget);
+    expect(find.text('ถามศัตรูพืช'), findsOneWidget);
+    expect(find.text('ถามพัสดี'), findsOneWidget);
+    expect(find.text('ผลผลิต'), findsOneWidget);
   });
 
-  testWidgets('Onboarding welcome slide renders and exposes a next button',
+  testWidgets('Signup screen renders RiceSmart brand and social buttons',
       (WidgetTester tester) async {
     await tester.pumpWidget(
       const ProviderScope(
-        child: MaterialApp(home: OnboardingScreen()),
+        child: MaterialApp(home: SignupScreen()),
       ),
     );
     await tester.pump();
 
-    expect(find.text('ถัดไป'), findsOneWidget);
-    expect(find.textContaining('ยินดีต้อนรับ'), findsOneWidget);
+    expect(find.text('RiceSmart'), findsOneWidget);
+    expect(find.text('สมัครด้วย Facebook'), findsOneWidget);
+    expect(find.text('สมัครด้วย Google'), findsOneWidget);
   });
 }
